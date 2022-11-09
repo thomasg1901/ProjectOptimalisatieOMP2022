@@ -5,12 +5,15 @@ public class Job {
     private float earlinessPenalty;
     private float rejectionPenalty;
 
-    public Job(int jobID, int duration, int releaseDate, float earlinessPenalty, float rejectionPenalty) {
+    private int[] setupTimes;
+
+    public Job(int jobID, int duration, int releaseDate, float earlinessPenalty, float rejectionPenalty, int[] setupTimes) {
         this.jobID = jobID;
         this.duration = duration;
         this.releaseDate = releaseDate;
         this.earlinessPenalty = earlinessPenalty;
         this.rejectionPenalty = rejectionPenalty;
+        this.setupTimes = setupTimes;
     }
 
     public int getJobID() {
@@ -51,5 +54,13 @@ public class Job {
 
     public void setRejectionPenalty(float rejectionPenalty) {
         this.rejectionPenalty = rejectionPenalty;
+    }
+
+    public int[] getSetupTimes() {
+        return setupTimes;
+    }
+
+    public void setSetupTimes(int[] setupTimes) {
+        this.setupTimes = setupTimes;
     }
 }
