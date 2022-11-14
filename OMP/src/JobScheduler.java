@@ -34,7 +34,7 @@ public class JobScheduler {
                 // look if this has overlap with unavailability
                 // check the release
 
-                lastjob = jobs[i].getJobID();
+                lastjob = jobs[i].getJobID();0
             }
         }
 

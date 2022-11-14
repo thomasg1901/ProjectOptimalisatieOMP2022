@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="jsonreader for jobs">
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="evaluator function">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/JobScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobScheduler.java" afterDir="false" />
     </list>
@@ -77,7 +77,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668429834083</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="evaluator function">
+      <created>1668434152350</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1668434152350</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -95,6 +102,7 @@
     <MESSAGE value="convert JSONArray to int[]" />
     <MESSAGE value="Added JobScheduler class and JsonReader" />
     <MESSAGE value="jsonreader for jobs" />
-    <option name="LAST_COMMIT_MESSAGE" value="jsonreader for jobs" />
+    <MESSAGE value="evaluator function" />
+    <option name="LAST_COMMIT_MESSAGE" value="evaluator function" />
   </component>
 </project>
