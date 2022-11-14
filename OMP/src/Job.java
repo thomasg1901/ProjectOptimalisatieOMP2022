@@ -1,17 +1,20 @@
 import java.util.ArrayList;
 
-public class Job {
+public class Job implements Comparable {
     private int jobID;
     private int duration;
     private int releaseDate;
+
+    private int dueDate;
     private double earlinessPenalty;
     private double rejectionPenalty;
     private int[] setupTimes;
 
-    public Job(int jobID, int duration, int releaseDate, double earlinessPenalty, double rejectionPenalty, int[] setupTimes) {
+    public Job(int jobID, int duration, int releaseDate, int dueDate, double earlinessPenalty, double rejectionPenalty, int[] setupTimes) {
         this.jobID = jobID;
         this.duration = duration;
         this.releaseDate = releaseDate;
+        this.dueDate = dueDate;
         this.earlinessPenalty = earlinessPenalty;
         this.rejectionPenalty = rejectionPenalty;
         this.setupTimes = setupTimes;
@@ -41,6 +44,14 @@ public class Job {
         this.releaseDate = releaseDate;
     }
 
+    public int getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(int dueDate) {
+        this.dueDate = dueDate;
+    }
+
     public double getEarlinessPenalty() {
         return earlinessPenalty;
     }
@@ -63,5 +74,10 @@ public class Job {
 
     public void setSetupTimes(int[] setupTimes) {
         this.setupTimes = setupTimes;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+
     }
 }
