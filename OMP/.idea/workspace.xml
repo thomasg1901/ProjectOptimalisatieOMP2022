@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="convert JSONArray to int[]">
-      <change afterPath="$PROJECT_DIR$/src/JsonReader.java" afterDir="false" />
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="Added JobScheduler class and JsonReader">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JsonReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JsonReader.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +64,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668429364761</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added JobScheduler class and JsonReader">
+      <created>1668429691930</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1668429691930</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -78,6 +87,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="convert JSONArray to int[]" />
-    <option name="LAST_COMMIT_MESSAGE" value="convert JSONArray to int[]" />
+    <MESSAGE value="Added JobScheduler class and JsonReader" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added JobScheduler class and JsonReader" />
   </component>
 </project>
