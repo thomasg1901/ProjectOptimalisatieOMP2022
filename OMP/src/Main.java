@@ -12,11 +12,11 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws IOException {
 
+        String resourceName = "./OMP/src/resources/TOY-20-10.json";
+
+        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
+        System.out.println("test");
     }
-
-
-
-
 }
 
 

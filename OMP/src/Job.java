@@ -6,7 +6,6 @@ public class Job {
     private int releaseDate;
     private double earlinessPenalty;
     private double rejectionPenalty;
-
     private int[] setupTimes;
 
     public Job(int jobID, int duration, int releaseDate, double earlinessPenalty, double rejectionPenalty, int[] setupTimes) {
