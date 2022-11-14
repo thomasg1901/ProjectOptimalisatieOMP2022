@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Job {
     private int jobID;
     private int duration;
@@ -6,8 +8,9 @@ public class Job {
     private double rejectionPenalty;
 
     private int[] setupTimes;
+    private ArrayList<Integer> setupTimes2;
 
-    public Job(int jobID, int duration, int releaseDate, double earlinessPenalty, double rejectionPenalty, int[] setupTimes) {
+    public Job(int jobID, int duration, int releaseDate, double earlinessPenalty, double rejectionPenalty, ArrayList<Integer> setupTimes2) {
         this.jobID = jobID;
         this.duration = duration;
         this.releaseDate = releaseDate;
