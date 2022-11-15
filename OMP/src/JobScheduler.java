@@ -1,4 +1,5 @@
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 public class JobScheduler {
@@ -14,6 +15,8 @@ public class JobScheduler {
         this.horizon = horizon;
         this.allJobs = allJobs;
         this.unavailabilities = unavailabilities;
+
+        evaluate(allJobs);
     }
 
     private double evaluate(Job[] jobs){
@@ -21,28 +24,47 @@ public class JobScheduler {
         int[] finishTime = new int[jobs.length];
         int[] setupStart = new int[jobs.length];
         int[] setupFinish = new int[jobs.length];
+        ArrayList<Job> schedule = new ArrayList<Job>();
 
         int t = 0;
         int lastjob = 0;
         for (int i = 0; i < jobs.length;i++){
             if(possibleFit(jobs[i], lastjob,t)){
-                int startSetup = t+1;
+                int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate();
                 int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjob];
                 int start = finishSetup+1;
                 int finish = start+jobs[i].getDuration();
 
-                // look if this has overlap with unavailability
-                // check the release
-
-                lastjob = jobs[i].getJobID();0
+                if(!overlapUnavailable(startSetup, finish, unavailabilities)){
+                    lastjob = jobs[i].getJobID();
+                    schedule.add(jobs[i]);
+                    t = finish;
+                }
             }
         }
 
         return 0.0;
     }
 
+    private boolean overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
+        for(Unavailability unavailability: unavailabilities){
+            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), startSetup))
+                return true;
+            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), finish))
+                return true;
+            if(startSetup <= unavailability.getStart() && finish >= unavailability.getEnd())
+                return true;
+        }
+
+        return false;
+    }
+
+    private boolean isInPeriod(int periodBegin, int periodEnd, int value){
+        return value >= periodBegin && value <= periodEnd;
+    }
+
     private boolean possibleFit(Job job, int prevJob, int t) {
-        return job.getDueDate() < t + job.getSetupTimes()[prevJob] + job.getDuration();
+        return job.getDueDate() > t + job.getSetupTimes()[prevJob] + job.getDuration();
     }
 
     public String getName() {

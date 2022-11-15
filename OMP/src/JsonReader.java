@@ -22,6 +22,7 @@ public class JsonReader {
             jobs[i] = new Job((int)data.get("id"),
                     (int)data.get("duration"),
                     (int)data.get("release_date"),
+                    (int) data.get("due_date"),
                     ((BigDecimal) data.get("earliness_penalty")).doubleValue(),
                     ((BigDecimal) data.get("rejection_penalty")).doubleValue(),
                     convertJsonArray(jsonsetup.getJSONArray((int)data.get("id"))));
