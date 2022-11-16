@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="evaluator function">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Job.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Job.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JobScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobScheduler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JsonReader.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JsonReader.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="Evaluation add check for release date">
+      <change beforePath="$PROJECT_DIR$/target/classes/JobScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JobScheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/JsonReader.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +91,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668434224660</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Evaluation add check for release date">
+      <created>1668516213367</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1668516213367</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,7 +117,8 @@
     <MESSAGE value="Added JobScheduler class and JsonReader" />
     <MESSAGE value="jsonreader for jobs" />
     <MESSAGE value="evaluator function" />
-    <option name="LAST_COMMIT_MESSAGE" value="evaluator function" />
+    <MESSAGE value="Evaluation add check for release date" />
+    <option name="LAST_COMMIT_MESSAGE" value="Evaluation add check for release date" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

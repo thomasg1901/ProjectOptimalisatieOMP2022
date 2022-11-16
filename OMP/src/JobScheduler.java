@@ -30,7 +30,7 @@ public class JobScheduler {
         int lastjob = 0;
         for (int i = 0; i < jobs.length;i++){
             if(possibleFit(jobs[i], lastjob,t)){
-                int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate();
+                int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
                 int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjob];
                 int start = finishSetup+1;
                 int finish = start+jobs[i].getDuration();
@@ -47,6 +47,7 @@ public class JobScheduler {
     }
 
     private boolean overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
+        //Mogelijke verbetering: separation van setup & job processing (setup voor unavailability & processing erna bv.)
         for(Unavailability unavailability: unavailabilities){
             if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), startSetup))
                 return true;
