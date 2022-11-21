@@ -41,16 +41,29 @@ public class JobScheduler {
     private double evaluate(Job[] jobs){
         schedule = new ArrayList<>();
         setups = new ArrayList<>();
-
         int t = 0;
-        int lastjobId = 0;
+        int lastjobId = -1;
         for (int i = 0; i < jobs.length;i++){
-            if(possibleFit(jobs[i], lastjobId,t)){
-                int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
-                int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
-                int start = finishSetup+1;
-                int finish = start+jobs[i].getDuration()-1;
+            int start, finish, startSetup, finishSetup;
+            if(lastjobId == -1){
+                start = jobs[i].getReleaseDate();
+                finish = start+jobs[i].getDuration();
+                startSetup = jobs[i].getReleaseDate();
+                finishSetup = jobs[i].getReleaseDate();
+                if(!overlapUnavailable(startSetup, finish, unavailabilities)) {
+                    jobs[i].setStart(start);
+                    schedule.add(jobs[i]);
+                    if (t > 0)
+                        setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
 
+                    lastjobId = jobs[i].getJobID();
+                    t = finish;
+                }
+            } else if(possibleFit(jobs[i], lastjobId,t)){
+                startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
+                finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
+                start = finishSetup+1;
+                finish = start+jobs[i].getDuration();
                 if(!overlapUnavailable(startSetup, finish, unavailabilities)){
                     jobs[i].setStart(start);
                     schedule.add(jobs[i]);
@@ -89,7 +102,7 @@ public class JobScheduler {
         for(Job job : allJobs){
             if(scheduledJobs.contains(job)){
                 //Job is scheduled
-                int finish = (job.getStart() + job.getDuration());
+                int finish = (job.getStart() + job.getDuration()-1);
                 earlinessPenaltySum += (job.getDueDate() - finish) * job.getEarlinessPenalty();
             } else {
                 //Job is rejected
