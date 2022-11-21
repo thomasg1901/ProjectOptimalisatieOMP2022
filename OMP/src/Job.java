@@ -4,11 +4,12 @@ public class Job implements Comparable {
     private int jobID;
     private int duration;
     private int releaseDate;
-
     private int dueDate;
     private double earlinessPenalty;
     private double rejectionPenalty;
     private int[] setupTimes;
+
+    private int start;
 
     public Job(int jobID, int duration, int releaseDate, int dueDate, double earlinessPenalty, double rejectionPenalty, int[] setupTimes) {
         this.jobID = jobID;
