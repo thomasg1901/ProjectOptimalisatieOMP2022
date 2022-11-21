@@ -25,6 +25,7 @@ public class JobScheduler {
         ArrayList<Job> schedule = new ArrayList<>();
         ArrayList<Setup> setups = new ArrayList<>();
 
+
         int t = 0;
         int lastjobId = 0;
         for (int i = 0; i < jobs.length;i++){
@@ -44,8 +45,7 @@ public class JobScheduler {
                 }
             }
         }
-
-        return 0.0;
+        return costFunction(schedule, allJobs);
     }
 
     private boolean overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
@@ -62,8 +62,24 @@ public class JobScheduler {
         return false;
     }
 
-    private double costFunction(){
-        // w.dur + sum van early penalty + sum van rejection penalty
+    private double costFunction(List<Job> scheduledJobs, Job[] allJobs){
+        Job firstJob = scheduledJobs.get(0);
+        Job lastJob = scheduledJobs.get(scheduledJobs.size() - 1);
+        int lastJobFinish = lastJob.getStart() + lastJob.getDuration();
+        int makeSpan = lastJobFinish - firstJob.getStart();
+        double rejectionPenaltySum = 0;
+        double earlinessPenaltySum = 0;
+        for(Job job : allJobs){
+            if(scheduledJobs.contains(job)){
+                //Job is scheduled
+                int finish = job.getStart() + job.getDuration();
+                earlinessPenaltySum += (job.getDueDate() - finish) * job.getEarlinessPenalty();
+            } else {
+                //Job is rejected
+                rejectionPenaltySum += job.getRejectionPenalty();
+            }
+        }
+        return weightDuration * makeSpan + earlinessPenaltySum + rejectionPenaltySum;
     }
 
     private boolean isInPeriod(int periodBegin, int periodEnd, int value){
