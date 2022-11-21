@@ -60,6 +60,10 @@ public class JobScheduler {
         return false;
     }
 
+    private double costFunction(){
+        // w.dur + sum van early penalty + sum van rejection penalty
+    }
+
     private boolean isInPeriod(int periodBegin, int periodEnd, int value){
         return value >= periodBegin && value <= periodEnd;
     }
