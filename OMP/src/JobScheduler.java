@@ -22,24 +22,24 @@ public class JobScheduler {
     }
 
     private double evaluate(Job[] jobs){
-        int[] startTime = new int[jobs.length];
-        int[] finishTime = new int[jobs.length];
-        int[] setupStart = new int[jobs.length];
-        int[] setupFinish = new int[jobs.length];
-        ArrayList<Job> schedule = new ArrayList<Job>();
+        ArrayList<Job> schedule = new ArrayList<>();
+        ArrayList<Setup> setups = new ArrayList<>();
 
         int t = 0;
-        int lastjob = 0;
+        int lastjobId = 0;
         for (int i = 0; i < jobs.length;i++){
-            if(possibleFit(jobs[i], lastjob,t)){
+            if(possibleFit(jobs[i], lastjobId,t)){
                 int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
-                int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjob];
+                int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
                 int start = finishSetup+1;
                 int finish = start+jobs[i].getDuration();
 
                 if(!overlapUnavailable(startSetup, finish, unavailabilities)){
-                    lastjob = jobs[i].getJobID();
+                    jobs[i].setStart(start);
+                    lastjobId = jobs[i].getJobID();
+
                     schedule.add(jobs[i]);
+                    setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
                     t = finish;
                 }
             }

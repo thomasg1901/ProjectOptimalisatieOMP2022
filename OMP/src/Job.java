@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Job implements Comparable {
     private int jobID;
@@ -19,6 +20,14 @@ public class Job implements Comparable {
         this.earlinessPenalty = earlinessPenalty;
         this.rejectionPenalty = rejectionPenalty;
         this.setupTimes = setupTimes;
+    }
+
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
     }
 
     public int getJobID() {
@@ -75,6 +84,19 @@ public class Job implements Comparable {
 
     public void setSetupTimes(int[] setupTimes) {
         this.setupTimes = setupTimes;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Job job = (Job) o;
+        return jobID == job.jobID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jobID);
     }
 
     @Override
