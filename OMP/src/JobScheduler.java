@@ -96,6 +96,9 @@ public class JobScheduler {
                 rejectionPenaltySum += job.getRejectionPenalty();
             }
         }
+        System.out.println("Duration: " + weightDuration * makeSpan);
+        System.out.println("Earliness penalty: " + earlinessPenaltySum);
+        System.out.println("Rejection penalty: " + rejectionPenaltySum);
         return weightDuration * makeSpan + earlinessPenaltySum + rejectionPenaltySum;
     }
 
