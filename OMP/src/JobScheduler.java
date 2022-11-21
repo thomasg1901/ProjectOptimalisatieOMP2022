@@ -89,7 +89,7 @@ public class JobScheduler {
         for(Job job : allJobs){
             if(scheduledJobs.contains(job)){
                 //Job is scheduled
-                int finish = job.getStart() + job.getDuration();
+                int finish = (job.getStart() + job.getDuration())-1;
                 earlinessPenaltySum += (job.getDueDate() - finish) * job.getEarlinessPenalty();
             } else {
                 //Job is rejected
