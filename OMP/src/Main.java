@@ -18,7 +18,8 @@ public class Main {
         JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
 
         System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
-        JsonWriter out = new JsonWriter(scheduler.getSchedule());
+        JsonWriter out = new JsonWriter("test", scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
+        out.writeSolutionToJson("./");
     }
 }
 
