@@ -9,7 +9,6 @@ public class JobScheduler {
     private int horizon;
     private Job[] allJobs;
     private Unavailability[] unavailabilities;
-
     private double cost;
 
     private List<Job> schedule;
@@ -50,7 +49,7 @@ public class JobScheduler {
                 int startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
                 int finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
                 int start = finishSetup+1;
-                int finish = start+jobs[i].getDuration();
+                int finish = start+jobs[i].getDuration()-1;
 
                 if(!overlapUnavailable(startSetup, finish, unavailabilities)){
                     jobs[i].setStart(start);
@@ -90,7 +89,7 @@ public class JobScheduler {
         for(Job job : allJobs){
             if(scheduledJobs.contains(job)){
                 //Job is scheduled
-                int finish = (job.getStart() + job.getDuration())-1;
+                int finish = (job.getStart() + job.getDuration());
                 earlinessPenaltySum += (job.getDueDate() - finish) * job.getEarlinessPenalty();
             } else {
                 //Job is rejected

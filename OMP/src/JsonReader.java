@@ -19,12 +19,23 @@ public class JsonReader {
         Job[] jobs = new Job[jsonjobs.length()];
         for (int i=0; i<jsonjobs.length();i++){
             JSONObject data = jsonjobs.getJSONObject(i);
+            double earliness_penalty, rejection_penalty;
+            if(data.get("earliness_penalty").getClass() == Integer.class){
+                earliness_penalty = ((Integer) data.get("earliness_penalty")).doubleValue();
+            } else {
+                earliness_penalty = ((BigDecimal) data.get("earliness_penalty")).doubleValue();
+            }
+            if(data.get("rejection_penalty").getClass() == Integer.class){
+                rejection_penalty = ((Integer)data.get("rejection_penalty")).doubleValue();
+            } else {
+                rejection_penalty = ((BigDecimal) data.get("rejection_penalty")).doubleValue();
+            }
             jobs[i] = new Job((int)data.get("id"),
                     (int)data.get("duration"),
                     (int)data.get("release_date"),
                     (int)data.get("due_date"),
-                    ((BigDecimal) data.get("earliness_penalty")).doubleValue(),
-                    ((BigDecimal) data.get("rejection_penalty")).doubleValue(),
+                    earliness_penalty,
+                    rejection_penalty,
                     convertJsonArray(jsonsetup.getJSONArray((int)data.get("id"))));
         }
         return jobs;

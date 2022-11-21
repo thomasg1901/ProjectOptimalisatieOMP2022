@@ -41,7 +41,7 @@ public class JsonWriter {
         jsonSolution.put("setups",setups);
 
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path+"/"+name+"_sol.json"));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path+"/sol-"+name+".json"));
             writer.write(jsonSolution.toString());
 
             writer.close();
