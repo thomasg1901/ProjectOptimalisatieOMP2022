@@ -1,6 +1,7 @@
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -40,8 +41,10 @@ public class JsonWriter {
         jsonSolution.put("setups",setups);
 
         try {
-            FileWriter file = new FileWriter(path+"/"+name+"_sol.json");
-            file.write(jsonSolution.toString());
+            BufferedWriter writer = new BufferedWriter(new FileWriter(path+"/"+name+"_sol.json"));
+            writer.write(jsonSolution.toString());
+
+            writer.close();
             System.out.println(jsonSolution.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);

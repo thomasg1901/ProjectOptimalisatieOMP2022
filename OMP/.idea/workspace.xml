@@ -4,12 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="json writer">
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="job validation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JsonWriter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JsonWriter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JobScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobScheduler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/JobScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JobScheduler.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,6 +23,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -150,7 +149,21 @@
       <option name="project" value="LOCAL" />
       <updated>1669036961555</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="json writer">
+      <created>1669037454250</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1669037454250</updated>
+    </task>
+    <task id="LOCAL-00013" summary="job validation">
+      <created>1669038557825</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1669038557826</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -173,7 +186,8 @@
     <MESSAGE value="begin cost function" />
     <MESSAGE value="added equals in job" />
     <MESSAGE value="json writer" />
-    <option name="LAST_COMMIT_MESSAGE" value="json writer" />
+    <MESSAGE value="job validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="job validation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -187,6 +201,11 @@
           <url>file://$PROJECT_DIR$/src/JsonReader.java</url>
           <line>16</line>
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/JobScheduler.java</url>
+          <line>65</line>
+          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
