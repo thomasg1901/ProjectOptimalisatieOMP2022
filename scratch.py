@@ -11,7 +11,7 @@ solutionFiles = os.listdir(solutionFolder)
 
 for file in inputFiles:
     if solutionFiles.__contains__('sol-'+file):
-        cmd = f'python {script} -i {inputFolder}/{file} -s {solutionFolder}/sol-{file}'
+        cmd = f'python3 {script} -i {inputFolder}/{file} -s {solutionFolder}/sol-{file}'
         p = Popen(cmd, shell=True, stdout=PIPE, stderr=PIPE, close_fds=True)
         (output, err) = p.communicate()
         output = output.decode("utf-8")

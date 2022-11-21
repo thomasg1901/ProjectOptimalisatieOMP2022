@@ -41,38 +41,30 @@ public class JobScheduler {
     private double evaluate(Job[] jobs){
         schedule = new ArrayList<>();
         setups = new ArrayList<>();
-        int t = 0;
-        int lastjobId = -1;
-        for (int i = 0; i < jobs.length;i++){
-            int start, finish, startSetup, finishSetup;
-            if(lastjobId == -1){
-                start = jobs[i].getReleaseDate();
-                finish = start+jobs[i].getDuration();
-                startSetup = jobs[i].getReleaseDate();
-                finishSetup = jobs[i].getReleaseDate();
-                if(!overlapUnavailable(startSetup, finish, unavailabilities)) {
-                    jobs[i].setStart(start);
-                    schedule.add(jobs[i]);
-                    if (t > 0)
-                        setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
 
-                    lastjobId = jobs[i].getJobID();
-                    t = finish;
-                }
-            } else if(possibleFit(jobs[i], lastjobId,t)){
-                startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
-                finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
-                start = finishSetup+1;
-                finish = start+jobs[i].getDuration();
-                if(!overlapUnavailable(startSetup, finish, unavailabilities)){
-                    jobs[i].setStart(start);
-                    schedule.add(jobs[i]);
-                    if(t > 0)
-                        setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
+        int start = jobs[0].getReleaseDate();
+        int finish = start+jobs[0].getDuration();
 
-                    lastjobId = jobs[i].getJobID();
-                    t = finish;
-                }
+        jobs[0].setStart(start);
+        schedule.add(jobs[0]);
+
+        int lastjobId = jobs[0].getJobID();
+        int t = finish;
+
+        for (int i = 1; i < jobs.length;i++){
+            int startSetup, finishSetup;
+            startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
+            finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
+            start = finishSetup+1;
+            finish = start+jobs[i].getDuration();
+
+            if(!overlapUnavailable(startSetup, finish, unavailabilities) && possibleFit(jobs[i], lastjobId,t)){
+                jobs[i].setStart(start);
+                schedule.add(jobs[i]);
+                setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
+
+                lastjobId = jobs[i].getJobID();
+                t = finish;
             }
         }
         return costFunction(schedule, allJobs);
@@ -120,6 +112,8 @@ public class JobScheduler {
     }
 
     private boolean possibleFit(Job job, int prevJob, int t) {
+        if(prevJob < 0)
+            return true;
         return job.getDueDate() > t + job.getSetupTimes()[prevJob] + job.getDuration();
     }
 
