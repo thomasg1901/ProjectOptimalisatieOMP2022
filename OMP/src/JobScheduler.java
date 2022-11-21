@@ -10,6 +10,12 @@ public class JobScheduler {
     private Job[] allJobs;
     private Unavailability[] unavailabilities;
 
+    private double cost;
+
+    public double getCost() {
+        return cost;
+    }
+
     public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities) {
         this.name = name;
         this.weightDuration = weightDuration;
@@ -18,7 +24,7 @@ public class JobScheduler {
         this.unavailabilities = unavailabilities;
 
         Arrays.sort(this.allJobs);
-        evaluate(allJobs);
+        this.cost = evaluate(allJobs);
     }
 
     private double evaluate(Job[] jobs){
