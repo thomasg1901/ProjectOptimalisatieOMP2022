@@ -12,8 +12,20 @@ public class JobScheduler {
 
     private double cost;
 
+    private List<Job> schedule;
+
+    private List<Setup> setups;
+
     public double getCost() {
         return cost;
+    }
+
+    public List<Job> getSchedule() {
+        return schedule;
+    }
+
+    public List<Setup> getSetups() {
+        return setups;
     }
 
     public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities) {
@@ -28,9 +40,8 @@ public class JobScheduler {
     }
 
     private double evaluate(Job[] jobs){
-        ArrayList<Job> schedule = new ArrayList<>();
-        ArrayList<Setup> setups = new ArrayList<>();
-
+        schedule = new ArrayList<>();
+        setups = new ArrayList<>();
 
         int t = 0;
         int lastjobId = 0;
