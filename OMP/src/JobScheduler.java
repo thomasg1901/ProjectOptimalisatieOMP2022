@@ -38,9 +38,12 @@ public class JobScheduler {
         this.cost = evaluate(allJobs);
     }
 
+    private int t;
+    private int lastjobId;
     private double evaluate(Job[] jobs){
         schedule = new ArrayList<>();
         setups = new ArrayList<>();
+
 
         int start = jobs[0].getReleaseDate();
         int finish = start+jobs[0].getDuration();
@@ -48,40 +51,52 @@ public class JobScheduler {
         jobs[0].setStart(start);
         schedule.add(jobs[0]);
 
-        int lastjobId = jobs[0].getJobID();
-        int t = finish;
+        lastjobId = jobs[0].getJobID();
+        t = finish;
 
         for (int i = 1; i < jobs.length;i++){
-            int startSetup, finishSetup;
-            startSetup = t > jobs[i].getReleaseDate()? t+1 : jobs[i].getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
-            finishSetup = startSetup + jobs[i].getSetupTimes()[lastjobId];
-            start = finishSetup+1;
-            finish = start+jobs[i].getDuration();
-
-            if(!overlapUnavailable(startSetup, finish, unavailabilities) && possibleFit(jobs[i], lastjobId,t)){
-                jobs[i].setStart(start);
-                schedule.add(jobs[i]);
-                setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
-
-                lastjobId = jobs[i].getJobID();
-                t = finish;
-            }
+            calcJob(t, jobs[i], lastjobId);
         }
         return costFunction(schedule, allJobs);
     }
 
-    private boolean overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
-        //Mogelijke verbetering: separation van setup & job processing (setup voor unavailability & processing erna bv.)
-        for(Unavailability unavailability: unavailabilities){
-            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), startSetup))
-                return true;
-            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), finish))
-                return true;
-            if(startSetup <= unavailability.getStart() && finish >= unavailability.getEnd())
-                return true;
+    private boolean calcJob(int t, Job job, int lastjobId){
+        int startSetup, finishSetup;
+        startSetup = t > job.getReleaseDate()? t+1 : job.getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
+        finishSetup = startSetup + job.getSetupTimes()[lastjobId];
+        int start = finishSetup+1;
+        int finish = start+job.getDuration();
+
+        int endUnavailabilityOverlap = overlapUnavailable(startSetup, finish, unavailabilities);
+        if(endUnavailabilityOverlap > -1){
+            return calcJob(endUnavailabilityOverlap+1, job, lastjobId);
+        }
+        else if(possibleFit(job, lastjobId,t)){
+            job.setStart(start);
+            schedule.add(job);
+            setups.add(new Setup(lastjobId, job.getJobID(), startSetup));
+
+            this.lastjobId = job.getJobID();
+            this.t = finish;
+
+            return true;
         }
 
         return false;
+    }
+
+    private int overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
+        //Mogelijke verbetering: separation van setup & job processing (setup voor unavailability & processing erna bv.)
+        for(Unavailability unavailability: unavailabilities){
+            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), startSetup))
+                return unavailability.getEnd();
+            if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), finish))
+                return unavailability.getEnd();
+            if(startSetup <= unavailability.getStart() && finish >= unavailability.getEnd())
+                return unavailability.getEnd();
+        }
+
+        return -1;
     }
 
     private double costFunction(List<Job> scheduledJobs, Job[] allJobs){
@@ -89,6 +104,7 @@ public class JobScheduler {
         Job lastJob = scheduledJobs.get(scheduledJobs.size() - 1);
         int lastJobFinish = lastJob.getStart() + lastJob.getDuration();
         int makeSpan = lastJobFinish - firstJob.getStart();
+        int rejectedCount = 0;
         double rejectionPenaltySum = 0;
         double earlinessPenaltySum = 0;
         for(Job job : allJobs){
@@ -98,9 +114,12 @@ public class JobScheduler {
                 earlinessPenaltySum += (job.getDueDate() - finish) * job.getEarlinessPenalty();
             } else {
                 //Job is rejected
+                rejectedCount++;
                 rejectionPenaltySum += job.getRejectionPenalty();
             }
         }
+
+        System.out.println("Recjected count: "+ rejectedCount);
         System.out.println("Duration: " + weightDuration * makeSpan);
         System.out.println("Earliness penalty: " + earlinessPenaltySum);
         System.out.println("Rejection penalty: " + rejectionPenaltySum);
