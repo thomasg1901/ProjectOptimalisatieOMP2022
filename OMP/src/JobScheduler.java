@@ -1,5 +1,6 @@
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class JobScheduler {
@@ -16,6 +17,7 @@ public class JobScheduler {
         this.allJobs = allJobs;
         this.unavailabilities = unavailabilities;
 
+        Arrays.sort(this.allJobs);
         evaluate(allJobs);
     }
 
