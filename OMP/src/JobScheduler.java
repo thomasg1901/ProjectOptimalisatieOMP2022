@@ -55,7 +55,8 @@ public class JobScheduler {
                 if(!overlapUnavailable(startSetup, finish, unavailabilities)){
                     jobs[i].setStart(start);
                     schedule.add(jobs[i]);
-                    setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
+                    if(t > 0)
+                        setups.add(new Setup(lastjobId, jobs[i].getJobID(), startSetup));
 
                     lastjobId = jobs[i].getJobID();
                     t = finish;
