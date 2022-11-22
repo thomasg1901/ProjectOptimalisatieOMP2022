@@ -20,22 +20,21 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-        findSolutionsA("./OMP/src/resources/");
-        findSolutionsB("./OMP/src/resources/");
+//        findSolutionsA("./OMP/src/resources/");
+//        findSolutionsB("./OMP/src/resources/");
+        findSolution("OMP/src/resources/A-100-30.json","./OMP/output");
 
 //        Voor Jef:
 //        findSolutionsA("./src/resources/");
 //        findSolutionsB("./src/resources/");
+
     }
 
     private static void findSolutionsA(String basePath) throws IOException {
         String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
         for(String resourceName : resourcesA){
             resourceName = basePath+resourceName;
-            JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
-            System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
-            JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
-            out.writeSolutionToJson("./OMP/output");
+            findSolution(resourceName, "./OMP/output");
         }
     }
 
@@ -43,12 +42,15 @@ public class Main {
         String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
         for(String resourceName : resourcesB){
             resourceName = basePath+resourceName;
-            JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
-            System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
-            JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
-            out.writeSolutionToJson("./OMP/output");
+            findSolution(resourceName, "./OMP/output");
         }
+    }
 
+    private static void findSolution(String inputPath, String outputPath) throws IOException {
+        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath);
+        System.out.println("Cost of " + scheduler.getName() + ": " + String.valueOf(scheduler.getCost()));
+        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
+        out.writeSolutionToJson(outputPath);
     }
 }
 
