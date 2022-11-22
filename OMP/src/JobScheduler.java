@@ -1,8 +1,6 @@
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JobScheduler {
     private String name;
@@ -56,7 +54,7 @@ public class JobScheduler {
             // Get new solution
             Job[] newOrder = getNewOrder(bestOrder, generator);
 
-            // Evaluate solution compaired to initail solution
+            // Evaluate solution compaired to initial solution
             cost = evaluate(newOrder);
             if (cost < bestCost){
                 bestOrder = newOrder;
@@ -66,7 +64,7 @@ public class JobScheduler {
                 System.out.println("Verbetering gevonden: "+ bestCost);
             }
 
-        }while (System.currentTimeMillis() - startTime < stopTime);
+        } while (System.currentTimeMillis() - startTime < stopTime);
 
     }
 
@@ -101,7 +99,58 @@ public class JobScheduler {
             calcJob(t, jobs[i], lastjobId);
         }
 
+        forwardBackwardPass(schedule);
+
         return costFunction(schedule, jobs);
+    }
+
+    private int[][] calculateForwardPass(int[] es, int[] ef, int index){
+        return new int[][]{es, ef};
+    }
+
+    private void forwardBackwardPass(List<Job> schedule){
+        int[] es = new int[schedule.size()];
+        int[] ef = new int[schedule.size()];
+        int[] ls = new int[schedule.size()];
+        int[] lf = new int[schedule.size()];
+        Setup[] earliestSetups = new Setup[setups.size()];
+        Setup[] lastSetups = new Setup[setups.size()];
+
+        //Forwards computation
+        Job firstJob = schedule.get(0);
+        es[0] = firstJob.getStart();
+        ef[0] = firstJob.getStart() + firstJob.getDuration();
+        int[] originalStarts = new int[schedule.size()];
+        for(int i = 0; i < schedule.size(); i++){
+            originalStarts[i] = schedule.get(i).getStart();
+        }
+        for(int i = 1; i < schedule.size(); i++){
+            int extra = 0;
+            int endUnavailabilityOverlap = overlapUnavailable(ef[i-1], es[i] + schedule.get(i).getDuration(), unavailabilities);
+            while(endUnavailabilityOverlap > -1){
+                extra+=1;
+                endUnavailabilityOverlap = overlapUnavailable(ef[i-1]+extra, es[i] + extra + schedule.get(i).getDuration(), unavailabilities);
+            }
+            es[i] = ef[i-1] + schedule.get(i-1).getSetupTimes()[schedule.get(i).getJobID()] + extra + 1;
+
+            //Wanneer earliest start voor release date ligt, aanpassen naar release date
+            if(es[i] < schedule.get(i).getReleaseDate()){
+                es[i] = schedule.get(i).getReleaseDate();
+            }
+            ef[i] = es[i] + schedule.get(i).getDuration();
+        }
+        //Backwards computation
+        Job lastJob = schedule.get(schedule.size()-1);
+        lf[schedule.size()-1] = horizon;
+        ls[schedule.size()-1] = lf[schedule.size()-1] - lastJob.getDuration();
+        for(int i = schedule.size()-2; i >= 0; i--){
+            lf[i] = ls[i+1] - schedule.get(i).getSetupTimes()[schedule.get(i+1).getJobID()];
+            //Wanneer laatste mogelijke finish na due date ligt, aanpassen naar due date
+            if(lf[i] > schedule.get(i).getDueDate()){
+                lf[i] = schedule.get(i).getDueDate();
+            }
+            ls[i] = lf[i] - schedule.get(i).getDuration();
+        }
     }
 
     private boolean calcJob(int t, Job job, int lastjobId){
@@ -111,12 +160,11 @@ public class JobScheduler {
             finishSetup = startSetup + job.getSetupTimes()[lastjobId];
             start = finishSetup+1;
             finish = start+job.getDuration();
-        }else {
+        } else {
             start = t > job.getReleaseDate()? t : job.getReleaseDate();
             finish = start+job.getDuration();
             startSetup = start;
         }
-
 
         int endUnavailabilityOverlap = overlapUnavailable(startSetup, finish, unavailabilities);
         if(endUnavailabilityOverlap > -1){
@@ -126,14 +174,11 @@ public class JobScheduler {
             job.setStart(start);
             if(!schedule.isEmpty())
                 setups.add(new Setup(lastjobId, job.getJobID(), startSetup));
-            schedule.add(job);
-
+                schedule.add(job);
             this.lastjobId = job.getJobID();
             this.t = finish;
-
             return true;
         }
-
         return false;
     }
 
@@ -171,7 +216,7 @@ public class JobScheduler {
             }
         }
 
-//        System.out.println("Recjected count: "+ rejectedCount);
+//        System.out.println("Rejected count: "+ rejectedCount);
 //        System.out.println("Duration: " + weightDuration * makeSpan);
 //        System.out.println("Earliness penalty: " + earlinessPenaltySum);
 //        System.out.println("Rejection penalty: " + rejectionPenaltySum);

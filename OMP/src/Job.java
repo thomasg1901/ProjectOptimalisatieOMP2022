@@ -105,7 +105,7 @@ public class Job implements Comparable {
         if(this.getDueDate() != oJob.getDueDate()){
             return this.getDueDate() - oJob.getDueDate();
         } else {
-            return this.getReleaseDate() - oJob.getReleaseDate();
+            return (int) (this.getEarlinessPenalty() - oJob.getEarlinessPenalty());
         }
     }
 }
