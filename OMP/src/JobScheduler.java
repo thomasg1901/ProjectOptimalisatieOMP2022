@@ -35,8 +35,7 @@ public class JobScheduler {
         this.unavailabilities = unavailabilities;
 
         Arrays.sort(this.allJobs);
-        bestCost = evaluate(allJobs);
-        localSearch(allJobs, 3000, 5);
+        localSearch(allJobs, 300, 5);
     }
 
 
@@ -66,6 +65,7 @@ public class JobScheduler {
                 bestSetups = setups;
                 System.out.println("Verbetering gevonden: "+ bestCost);
             }
+
         }while (System.currentTimeMillis() - startTime < stopTime);
 
     }
@@ -101,18 +101,18 @@ public class JobScheduler {
             calcJob(t, jobs[i], lastjobId);
         }
 
-        return costFunction(schedule, allJobs);
+        return costFunction(schedule, jobs);
     }
 
     private boolean calcJob(int t, Job job, int lastjobId){
         int startSetup, finishSetup, start, finish;
         if(!schedule.isEmpty()){
-            startSetup = t > job.getReleaseDate()? t+1 : job.getReleaseDate()+1; // Kan nog verbeterd worden setup vroeger starten dan release
+            startSetup = t > job.getReleaseDate()? t : job.getReleaseDate(); // Kan nog verbeterd worden setup vroeger starten dan release
             finishSetup = startSetup + job.getSetupTimes()[lastjobId];
             start = finishSetup+1;
             finish = start+job.getDuration();
         }else {
-            start = t > job.getReleaseDate()? t+1 : job.getReleaseDate();
+            start = t > job.getReleaseDate()? t : job.getReleaseDate();
             finish = start+job.getDuration();
             startSetup = start;
         }
@@ -171,10 +171,10 @@ public class JobScheduler {
             }
         }
 
-        System.out.println("Recjected count: "+ rejectedCount);
-        System.out.println("Duration: " + weightDuration * makeSpan);
-        System.out.println("Earliness penalty: " + earlinessPenaltySum);
-        System.out.println("Rejection penalty: " + rejectionPenaltySum);
+//        System.out.println("Recjected count: "+ rejectedCount);
+//        System.out.println("Duration: " + weightDuration * makeSpan);
+//        System.out.println("Earliness penalty: " + earlinessPenaltySum);
+//        System.out.println("Rejection penalty: " + rejectionPenaltySum);
         return weightDuration * makeSpan + earlinessPenaltySum + rejectionPenaltySum;
     }
 
