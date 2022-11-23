@@ -31,7 +31,7 @@ public class JobScheduler {
         this.unavailabilities = unavailabilities;
 
         Arrays.sort(this.allJobs);
-        long seconds = 1;
+        long seconds = 10;
         long time = (long) (seconds * Math.pow(10,3));
         localSearch(allJobs, time, 5);
     }
@@ -49,7 +49,7 @@ public class JobScheduler {
         bestSchedule = this.schedule;
         bestSetups = this.setups;
 
-        Random generator = new Random(500);
+        Random generator = new Random();
         do{
             // Get new solution
             Job[] newOrder = getNewOrder(bestOrder, generator);
@@ -70,9 +70,9 @@ public class JobScheduler {
 
     private Job[] getNewOrder(Job[] jobs, Random generator){
         int index1 = generator.nextInt(jobs.length-1);
-        int index2 = 0;
+        int index2 = jobs.length - 1;
 
-        if (index1 > 0){
+        if (index1 > index2){
             index2 = index1-1;
         }
 
