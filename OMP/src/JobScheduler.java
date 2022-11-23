@@ -31,7 +31,7 @@ public class JobScheduler {
         this.unavailabilities = unavailabilities;
 
         Arrays.sort(this.allJobs);
-        long seconds = 10;
+        long seconds = 300;
         long time = (long) (seconds * Math.pow(10,3));
         localSearch(allJobs, time, 5);
     }
@@ -49,7 +49,7 @@ public class JobScheduler {
         bestSchedule = this.schedule;
         bestSetups = this.setups;
 
-        Random generator = new Random();
+        Random generator = new Random(seed);
         do{
             // Get new solution
             Job[] newOrder = getNewOrder(bestOrder, generator);
@@ -57,7 +57,7 @@ public class JobScheduler {
             // Evaluate solution compaired to initial solution
             cost = evaluate(newOrder);
             if (cost < bestCost){
-                bestOrder = newOrder;
+                //bestOrder = newOrder;
                 bestCost = cost;
                 bestSchedule = schedule;
                 bestSetups = setups;
@@ -70,10 +70,10 @@ public class JobScheduler {
 
     private Job[] getNewOrder(Job[] jobs, Random generator){
         int index1 = generator.nextInt(jobs.length-1);
-        int index2 = jobs.length - 1;
+        int index2 = generator.nextInt(jobs.length-1);
 
-        if (index1 > index2){
-            index2 = index1-1;
+        if (index1 == index2){
+            index2 = index1+1;
         }
 
         Job[] reorder = new Job[jobs.length];
@@ -121,8 +121,6 @@ public class JobScheduler {
             }
 
         }
-
-        int a = 0;
     }
 
     private int backwardsCalc(int earlyeastFinish, Job job, Setup setup, int prevJobId, boolean firstJob){
@@ -155,7 +153,7 @@ public class JobScheduler {
     private boolean calcJob(int t, Job job, int lastjobId){
         int startSetup, finishSetup, start, finish;
         if(!schedule.isEmpty()){
-            startSetup = t; // Kan nog verbeterd worden setup vroeger starten dan release
+            startSetup = t; // setup vroeger starten dan release
             if(t < job.getReleaseDate() && job.getReleaseDate() > t + job.getSetupTimes()[lastjobId]){
                 startSetup = job.getReleaseDate() - job.getSetupTimes()[lastjobId];
             }
