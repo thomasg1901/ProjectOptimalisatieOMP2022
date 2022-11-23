@@ -111,16 +111,7 @@ public class JobScheduler {
     private void backwardsPassJobs(List<Job> schedule, List<Setup> setups){
         int[] lastStart = new int[schedule.size()];
 
-        //Backwards computation
-        Job lastJob = schedule.get(schedule.size()-1);
-        int finish = lastJob.getDueDate();
-        int start = finish - lastJob.getDuration();
-        int setupStart = start - lastJob.getSetupTimes()[schedule.get(schedule.size()-2).getJobID()];
-
-        lastJob.setStart(start);
-        Setup lastSetup = setups.get(setups.size()-1);
-        lastSetup.setStart(setupStart);
-        lastStart[lastStart.length -1] = setupStart;
+        lastStart[lastStart.length -1] = backwardsCalc(horizon, schedule.get(schedule.size()-1),setups.get(setups.size()-1), schedule.get(schedule.size()-2).getJobID(), false);
 
         for(int i = schedule.size()-2; i >= 0; i--){
             if(i == 0){
