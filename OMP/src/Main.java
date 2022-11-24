@@ -20,9 +20,9 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-        findSolutionsA("./OMP/src/resources/");
-        findSolutionsB("./OMP/src/resources/");
-        //findSolution("OMP/src/resources/B-400-90.json","./OMP/output");
+        //findSolutionsA("./OMP/src/resources/");
+        //findSolutionsB("./OMP/src/resources/");
+        findSolution("OMP/src/resources/B-400-90.json","./OMP/output");
 
 //        Voor Jef:
 //        findSolutionsA("./src/resources/");
