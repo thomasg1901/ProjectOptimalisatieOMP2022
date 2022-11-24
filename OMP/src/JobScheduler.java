@@ -33,39 +33,75 @@ public class JobScheduler {
         Arrays.sort(this.allJobs);
         long seconds = 300;
         long time = (long) (seconds * Math.pow(10,3));
-        localSearch(allJobs, time, 5);
+        localSearch(allJobs, time, 50);
     }
 
 
 
-    private void localSearch(Job[] initialSolution, long stopTime, int seed){
+    private void localSearch(Job[] initialOrder, long stopTime, int seed){
         long startTime = System.currentTimeMillis();
 
-        // get initial solution
-
-        bestOrder = initialSolution;
-        bestCost = evaluate(initialSolution);
+        bestOrder = initialOrder;
+        bestCost = evaluate(initialOrder);
 
         bestSchedule = this.schedule;
         bestSetups = this.setups;
 
+        Solution initialSolution = new Solution(bestCost, bestOrder, bestSchedule, bestSetups, null);
+        int searchTime = 1000;
+
+        Random generator = new Random(seed);
+        try {
+            searchSolution(initialSolution,startTime, stopTime, seed,2);
+
+        }catch (RuntimeException e){
+            System.out.println(e.getMessage());
+            System.out.println(System.currentTimeMillis() - startTime);
+        }
+
+
+    }
+
+    private Solution searchSolution(Solution solution, long totalStart, long stopTime, int seed, int depth){
+        if(System.currentTimeMillis() - totalStart > stopTime){
+            throw new RuntimeException("Out of time");
+        } else if (solution.isFoundPeak()) {
+            return null;
+        }
+
+        long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
             // Get new solution
-            Job[] newOrder = getNewOrder(bestOrder, generator);
+            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
 
             // Evaluate solution compaired to initial solution
             cost = evaluate(newOrder);
             if (cost < bestCost){
-                //bestOrder = newOrder;
                 bestCost = cost;
+                solution.addImprovement(new Solution(cost, newOrder, schedule, setups, solution));
                 bestSchedule = schedule;
                 bestSetups = setups;
-                System.out.println("[" + (System.currentTimeMillis() - startTime) + "ms] improvement: " + cost);
+                System.out.println("[" + (System.currentTimeMillis() - totalStart) + "ms] improvement: " + cost);
+                improvementFound = System.currentTimeMillis();
+            } else if (cost < solution.getCost()) {
+                solution.setCost(cost);
+                solution.addImprovement(new Solution(cost, newOrder, schedule, setups, solution));
+                improvementFound = System.currentTimeMillis();
             }
+        } while (System.currentTimeMillis() - improvementFound < 250);
 
-        } while (System.currentTimeMillis() - startTime < stopTime);
+        for (int i = 0; i < solution.getImprovements().size() && i < depth; i++) {
+            Solution s = solution.getImprovements().get(i);
+            if(!s.isFoundPeak()){
+                System.out.println("Searching trough solution: "+ s.getCost());
+                searchSolution(s,totalStart, stopTime, seed,Math.max(depth - 1,1));
+                s.setFoundPeak(true);
+            }
+        }
 
+        solution.setFoundPeak(true);
+        return solution;
     }
 
     private Job[] getNewOrder(Job[] jobs, Random generator){
