@@ -15,6 +15,8 @@ public class JobScheduler {
 
     private List<Setup> setups;
 
+    private double biggestLeap = 0;
+
 
     // Local search
     private Job[] bestOrder;
@@ -30,10 +32,10 @@ public class JobScheduler {
         this.allJobs = allJobs;
         this.unavailabilities = unavailabilities;
 
-        Arrays.sort(this.allJobs);
-        long seconds = 300;
+        //Arrays.sort(this.allJobs);
+        long seconds = 100;
         long time = (long) (seconds * Math.pow(10,3));
-        localSearch(allJobs, time, 50);
+        localSearch(allJobs, time, 5);
     }
 
 
@@ -48,11 +50,11 @@ public class JobScheduler {
         bestSetups = this.setups;
 
         Solution initialSolution = new Solution(bestCost, bestOrder, bestSchedule, bestSetups, null);
-        int searchTime = 1000;
-
-        Random generator = new Random(seed);
         try {
-            searchSolution(initialSolution,startTime, stopTime, seed,2);
+            Solution s = searchSolution(initialSolution,startTime, seed);
+            for (int i = s.getImprovements().size() -1; i > 0 ; i--) {
+                hillClimb(s.getImprovements().get(i), startTime, stopTime, seed);
+            }
 
         }catch (RuntimeException e){
             System.out.println(e.getMessage());
@@ -62,13 +64,37 @@ public class JobScheduler {
 
     }
 
-    private Solution searchSolution(Solution solution, long totalStart, long stopTime, int seed, int depth){
-        if(System.currentTimeMillis() - totalStart > stopTime){
-            throw new RuntimeException("Out of time");
-        } else if (solution.isFoundPeak()) {
-            return null;
-        }
+    private void hillClimb(Solution solution, long start, long stopTime, int seed){
+        long improvementFound = System.currentTimeMillis();
+        Random generator = new Random(seed);
+        do{
+            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
 
+            cost = evaluate(newOrder);
+            if (cost < bestCost){
+                bestSchedule = schedule;
+                bestSetups = setups;
+                bestCost = cost;
+                solution.setOrder(newOrder);
+                solution.setSchedule(schedule);
+                solution.setSetups(setups);
+                solution.setCost(cost);
+                improvementFound = System.currentTimeMillis();
+                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
+            } else if (cost < solution.getCost()) {
+                solution.setOrder(newOrder);
+                solution.setSchedule(schedule);
+                solution.setSetups(setups);
+                solution.setCost(cost);
+                improvementFound = System.currentTimeMillis();
+                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Local improvement found: " + cost);
+            }
+
+        }while (System.currentTimeMillis() - start < stopTime && System.currentTimeMillis() - improvementFound < 10000);
+        // geen verbetering in x tijd volgende
+    }
+
+    private Solution searchSolution(Solution solution, long totalStart, int seed){
         long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
@@ -78,28 +104,16 @@ public class JobScheduler {
             // Evaluate solution compaired to initial solution
             cost = evaluate(newOrder);
             if (cost < bestCost){
+                if(solution.getCost() - cost > biggestLeap)
+                    biggestLeap = solution.getCost() - cost;
                 bestCost = cost;
                 solution.addImprovement(new Solution(cost, newOrder, schedule, setups, solution));
                 bestSchedule = schedule;
                 bestSetups = setups;
                 System.out.println("[" + (System.currentTimeMillis() - totalStart) + "ms] improvement: " + cost);
                 improvementFound = System.currentTimeMillis();
-            } else if (cost < solution.getCost()) {
-                solution.setCost(cost);
-                solution.addImprovement(new Solution(cost, newOrder, schedule, setups, solution));
-                improvementFound = System.currentTimeMillis();
             }
-        } while (System.currentTimeMillis() - improvementFound < 250);
-
-        for (int i = 0; i < solution.getImprovements().size() && i < depth; i++) {
-            Solution s = solution.getImprovements().get(i);
-            if(!s.isFoundPeak()){
-                System.out.println("Searching trough solution: "+ s.getCost());
-                searchSolution(s,totalStart, stopTime, seed,Math.max(depth - 1,1));
-                s.setFoundPeak(true);
-            }
-        }
-
+        } while (System.currentTimeMillis() - improvementFound < 5000);
         solution.setFoundPeak(true);
         return solution;
     }
@@ -140,9 +154,6 @@ public class JobScheduler {
         return costFunction(schedule, jobs);
     }
 
-    private int[][] calculateForwardPass(int[] es, int[] ef, int index){
-        return new int[][]{es, ef};
-    }
 
     private void backwardsPassJobs(List<Job> schedule, List<Setup> setups){
         int[] lastStart = new int[schedule.size()];
@@ -256,7 +267,9 @@ public class JobScheduler {
 //        System.out.println("Duration: " + weightDuration * makeSpan);
 //        System.out.println("Earliness penalty: " + earlinessPenaltySum);
 //        System.out.println("Rejection penalty: " + rejectionPenaltySum);
-        return weightDuration * makeSpan + earlinessPenaltySum + rejectionPenaltySum;
+        double sum = weightDuration * makeSpan + earlinessPenaltySum + rejectionPenaltySum;
+
+        return Math.round(sum * 100.0) / 100.0;
     }
 
     private boolean isInPeriod(int periodBegin, int periodEnd, int value){
