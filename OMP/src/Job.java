@@ -103,9 +103,11 @@ public class Job implements Comparable {
     public int compareTo(Object o) {
         Job oJob = (Job)o;
         if(this.getDueDate() != oJob.getDueDate()){
-            return this.getDueDate() - oJob.getDueDate();
-        } else {
-            return (int) (this.getEarlinessPenalty() - oJob.getEarlinessPenalty());
+            return (this.getDueDate()) - (oJob.getDueDate());
+        }else if (this.getRejectionPenalty() != oJob.getRejectionPenalty()) {
+            return (int) (this.getRejectionPenalty() - oJob.getRejectionPenalty());
+        }else{
+            return (int) (oJob.getEarlinessPenalty() - this.getEarlinessPenalty());
         }
     }
 }

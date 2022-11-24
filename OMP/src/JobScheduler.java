@@ -32,7 +32,7 @@ public class JobScheduler {
         this.allJobs = allJobs;
         this.unavailabilities = unavailabilities;
 
-        //Arrays.sort(this.allJobs);
+        Arrays.sort(this.allJobs);
         long seconds = 100;
         long time = (long) (seconds * Math.pow(10,3));
         localSearch(allJobs, time, 5);
