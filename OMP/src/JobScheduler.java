@@ -115,7 +115,7 @@ public class JobScheduler {
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
                 costs.add(cost);
                 time.add(System.currentTimeMillis() - start);
-            }else if(Math.exp((this.bestCost - cost)/T)*100 > 30){
+            }else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble(1)){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
