@@ -39,7 +39,7 @@ public class JobScheduler {
 
         costs = new ArrayList<>();
         Arrays.sort(this.allJobs);
-        long seconds = 1;
+        long seconds = 10;
         long time = (long) (seconds * Math.pow(10,3));
         simulatedAnneling(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
         //localSearch(allJobs, time, 5);
@@ -95,7 +95,7 @@ public class JobScheduler {
 
     private void simulatedAnneling(Solution solution, long start, long stopTime, int seed){
         double T = 5000;
-        double alpha = 0.75;
+        double alpha = 0.5;
         Random generator = new Random(seed);
         do{
             Job[] newOrder = getNewOrder(solution.getOrder(), generator);
@@ -223,7 +223,6 @@ public class JobScheduler {
             }else {
                 lastStart[i] = backwardsCalc(lastStart[i+1], schedule.get(i), setups.get(i-1), schedule.get(i-1).getJobID(), false);
             }
-
         }
     }
 
