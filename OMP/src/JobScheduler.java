@@ -12,7 +12,7 @@ public class JobScheduler {
     private double cost;
 
     private List<Double> costs;
-
+    private List<Long> time;
     private int t;
     private int lastjobId;
 
@@ -38,22 +38,26 @@ public class JobScheduler {
         this.unavailabilities = unavailabilities;
 
         costs = new ArrayList<>();
+        time = new ArrayList<>();
+
         Arrays.sort(this.allJobs);
-        long seconds = 10;
+        long seconds = 300;
         long time = (long) (seconds * Math.pow(10,3));
         simulatedAnneling(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
         //localSearch(allJobs, time, 5);
         System.out.println(costs.size());
 
+        writeToFile(costs, this.name);
+        writeToFile(this.time, name+"_times");
+    }
+
+    private void writeToFile(List list,String name){
         final String FILENAME = name+".txt";
         try ( BufferedWriter bw = new BufferedWriter (new FileWriter(FILENAME)) )
         {
-            for (Double line : costs) {
+            for (var line : list) {
                 bw.write (line + ";");
             }
-
-            bw.close ();
-
         } catch (IOException e) {
             e.printStackTrace ();
         }
@@ -94,8 +98,8 @@ public class JobScheduler {
     }
 
     private void simulatedAnneling(Solution solution, long start, long stopTime, int seed){
-        double T = 5000;
-        double alpha = 0.5;
+        double T = 7800;
+        double alpha = 0.51;
         Random generator = new Random(seed);
         do{
             Job[] newOrder = getNewOrder(solution.getOrder(), generator);
@@ -110,12 +114,14 @@ public class JobScheduler {
                 solution.setCost(cost);
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
                 costs.add(cost);
-            }else if(Math.exp((this.bestCost - cost)/T)*100 > generator.nextInt(100)){
+                time.add(System.currentTimeMillis() - start);
+            }else if(Math.exp((this.bestCost - cost)/T)*100 > 30){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
                 costs.add(cost);
+                time.add(System.currentTimeMillis() - start);
             }
             T = alpha * T;
         }while (System.currentTimeMillis() - start < stopTime);
