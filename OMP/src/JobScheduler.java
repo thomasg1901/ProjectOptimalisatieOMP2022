@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class JobScheduler {
@@ -7,6 +10,8 @@ public class JobScheduler {
     private Job[] allJobs;
     private Unavailability[] unavailabilities;
     private double cost;
+
+    private List<Double> costs;
 
     private int t;
     private int lastjobId;
@@ -32,10 +37,36 @@ public class JobScheduler {
         this.allJobs = allJobs;
         this.unavailabilities = unavailabilities;
 
+        costs = new ArrayList<>();
         Arrays.sort(this.allJobs);
-        long seconds = 300;
+        long seconds = 1;
         long time = (long) (seconds * Math.pow(10,3));
-        localSearch(allJobs, time, 5);
+        simulatedAnneling(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
+        //localSearch(allJobs, time, 5);
+        System.out.println(costs.size());
+
+        final String FILENAME = name+".txt";
+        try ( BufferedWriter bw = new BufferedWriter (new FileWriter(FILENAME)) )
+        {
+            for (Double line : costs) {
+                bw.write (line + ";");
+            }
+
+            bw.close ();
+
+        } catch (IOException e) {
+            e.printStackTrace ();
+        }
+    }
+
+    private Solution getInitialSolution(Job[] initialOrder){
+        bestOrder = initialOrder;
+        bestCost = evaluate(initialOrder);
+
+        bestSchedule = this.schedule;
+        bestSetups = this.setups;
+
+        return new Solution(bestCost, bestOrder, bestSchedule, bestSetups, null);
     }
 
 
@@ -60,8 +91,34 @@ public class JobScheduler {
             System.out.println(e.getMessage());
             System.out.println(System.currentTimeMillis() - startTime);
         }
+    }
 
-
+    private void simulatedAnneling(Solution solution, long start, long stopTime, int seed){
+        double T = 5000;
+        double alpha = 0.75;
+        Random generator = new Random(seed);
+        do{
+            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
+            double cost = evaluate(newOrder);
+            if(cost < this.bestCost){
+                bestSchedule = schedule;
+                bestSetups = setups;
+                bestCost = cost;
+                solution.setOrder(newOrder);
+                solution.setSchedule(schedule);
+                solution.setSetups(setups);
+                solution.setCost(cost);
+                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
+                costs.add(cost);
+            }else if(Math.exp((this.bestCost - cost)/T)*100 > generator.nextInt(100)){
+                solution.setOrder(newOrder);
+                solution.setSchedule(schedule);
+                solution.setSetups(setups);
+                solution.setCost(cost);
+                costs.add(cost);
+            }
+            T = alpha * T;
+        }while (System.currentTimeMillis() - start < stopTime);
     }
 
     private void hillClimb(Solution solution, long start, long stopTime, int seed){

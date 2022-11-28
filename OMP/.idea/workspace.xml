@@ -4,10 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="job validation">
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="Check if overlap with unscheduled to schedule after">
+      <change afterPath="$PROJECT_DIR$/A-100-30.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/A-200-30.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/A-400-90.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-100-30.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-100-30.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-200-30.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-200-30.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-400-90.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-400-90.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/JobScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobScheduler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/JobScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JobScheduler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,7 +171,28 @@
       <option name="project" value="LOCAL" />
       <updated>1669038557826</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="intial setup removed">
+      <created>1669038691871</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1669038691871</updated>
+    </task>
+    <task id="LOCAL-00015" summary="intial setup removed">
+      <created>1669059571005</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1669059571005</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Check if overlap with unscheduled to schedule after">
+      <created>1669061351525</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1669061351525</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -187,25 +216,27 @@
     <MESSAGE value="added equals in job" />
     <MESSAGE value="json writer" />
     <MESSAGE value="job validation" />
-    <option name="LAST_COMMIT_MESSAGE" value="job validation" />
+    <MESSAGE value="intial setup removed" />
+    <MESSAGE value="Check if overlap with unscheduled to schedule after" />
+    <option name="LAST_COMMIT_MESSAGE" value="Check if overlap with unscheduled to schedule after" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>19</line>
+          <line>40</line>
           <option name="timeStamp" value="6" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/JsonReader.java</url>
-          <line>16</line>
-          <option name="timeStamp" value="7" />
+          <url>file://$PROJECT_DIR$/src/Main.java</url>
+          <line>30</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/JobScheduler.java</url>
-          <line>65</line>
-          <option name="timeStamp" value="8" />
+          <line>98</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
