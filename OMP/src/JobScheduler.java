@@ -98,8 +98,8 @@ public class JobScheduler {
     }
 
     private void simulatedAnneling(Solution solution, long start, long stopTime, int seed){
-        double T = 7800;
-        double alpha = 0.51;
+        double T = 250;
+        double alpha = 0.86;
         Random generator = new Random(seed);
         do{
             Job[] newOrder = getNewOrder(solution.getOrder(), generator);
@@ -232,23 +232,11 @@ public class JobScheduler {
         }
     }
 
-    private int backwardsCalc(int earlyeastFinish, Job job, Setup setup, int prevJobId, boolean firstJob){
-        int finishJob = earlyeastFinish;
-        //Wanneer laatste mogelijke finish na due date ligt, aanpassen naar due date
-        if(finishJob > job.getDueDate()){
-            finishJob = job.getDueDate();
-        }
-
-        int startJob = finishJob - job.getDuration();
-
+    private int backwardsCalc(int earliestFinish, Job job, Setup setup, int prevJobId, boolean firstJob){
+        int startJob = calcJob(earliestFinish, job);
 
         if(!firstJob){
-            int finishSetup = startJob;
-            int startSetup = finishSetup - job.getSetupTimes()[prevJobId];
-            Unavailability unavailabilityOverlap = overlapUnavailable(startSetup, finishJob, unavailabilities);
-            if(unavailabilityOverlap != null){
-                return backwardsCalc(unavailabilityOverlap.getStart()-1, job, setup, prevJobId, firstJob);
-            }
+            int startSetup = calcSetup(startJob, job.getSetupTimes()[prevJobId]);
             setup.setStart(startSetup);
             job.setStart(startJob);
             return startSetup;
@@ -256,6 +244,32 @@ public class JobScheduler {
             job.setStart(startJob);
             return startJob;
         }
+    }
+
+    private int calcSetup(int earliestFinish, int duration){
+        int finishSetup = earliestFinish;
+        int startSetup = earliestFinish - duration;
+        Unavailability unavailabilityOverlap = overlapUnavailable(startSetup, finishSetup, unavailabilities);
+        if(unavailabilityOverlap != null){
+            return calcSetup(unavailabilityOverlap.getStart() -1, duration);
+        }
+
+        return startSetup;
+    }
+
+    private int calcJob(int earliestFinish, Job job){
+        int finishJob = earliestFinish;
+        if(finishJob > job.getDueDate()){
+            finishJob = job.getDueDate();
+        }
+
+        int startJob = finishJob - job.getDuration();
+        Unavailability unavailabilityOverlap = overlapUnavailable(startJob, finishJob, unavailabilities);
+        if(unavailabilityOverlap != null){
+            return calcJob(unavailabilityOverlap.getStart() -1, job);
+        }
+
+        return startJob;
     }
 
 
@@ -277,7 +291,7 @@ public class JobScheduler {
 
         Unavailability unavailabilityOverlap = overlapUnavailable(startSetup, finish, unavailabilities);
         if(unavailabilityOverlap != null){
-            return calcJob(unavailabilityOverlap.getEnd()+1, job, lastjobId);
+            return calcJob(unavailabilityOverlap.getEnd() +1, job, lastjobId);
         }
         else if(possibleFit(job, lastjobId,t)){
             job.setStart(start);
