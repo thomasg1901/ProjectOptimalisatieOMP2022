@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Main {
@@ -20,9 +21,9 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-        findSolutionsA("./OMP/src/resources/");
-        findSolutionsB("./OMP/src/resources/");
-        //findSolution("OMP/src/resources/B-400-90.json","./OMP/output");
+        //findSolutionsA("./OMP/src/resources/");
+        //findSolutionsB("./OMP/src/resources/");
+        findSolution("OMP/src/resources/A-100-30.json","./OMP/output");
 
 //        Voor Jef:
 //        findSolutionsA("./src/resources/");
@@ -48,9 +49,60 @@ public class Main {
 
     private static void findSolution(String inputPath, String outputPath) throws IOException {
         JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath);
+        visualize(scheduler);
         System.out.println("Cost of " + scheduler.getName() + ": " + String.valueOf(scheduler.getCost()));
         JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
         out.writeSolutionToJson(outputPath);
+    }
+
+    private static void visualize(JobScheduler scheduler){
+        List<Job> schedule = scheduler.getSchedule();
+        String u = "";
+        for (Unavailability unavailability: scheduler.getUnavailabilities()) {
+            if(u.length() < unavailability.getStart()){
+                for (int i = u.length(); i < unavailability.getStart(); i++) {
+                    u += " ";
+                }
+            }
+            for (int i = u.length(); i < unavailability.getEnd(); i++) {
+                u += "X";
+            }
+        }
+        for (int i = 0; i < schedule.size(); i++) {
+            String s = "";
+            String v = "";
+            Job job = schedule.get(i);
+            for (int j = 0; j < job.getDueDate(); j++) {
+                if(j >= job.getReleaseDate()){
+                    s += "-";
+                }else{
+                    s += " ";
+                }
+            }
+            if(i > 0){
+                Setup setup = scheduler.getSetups().get(i-1);
+                int duration = job.getSetupTimes()[setup.getFrom()];
+                for (int j = 0; j < job.getStart(); j++) {
+                    if(j >= setup.getStart() && j <= setup.getStart() + duration){
+                        v += "$";
+                    }else {
+                        v += " ";
+                    }
+
+                }
+            }else{
+                for (int j = 0; j < job.getStart(); j++) {
+                    v += " ";
+                }
+            }
+
+            for(int j = schedule.get(i).getStart(); j < schedule.get(i).getStart()+schedule.get(i).getDuration(); j++){
+                v += "A";
+            }
+            System.out.println(u);
+            System.out.println(s);
+            System.out.println(v);
+        }
     }
 }
 
