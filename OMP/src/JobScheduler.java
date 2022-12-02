@@ -43,7 +43,7 @@ public class JobScheduler {
         time = new ArrayList<>();
 
         Arrays.sort(this.allJobs);
-        long seconds = 60;
+        long seconds = 100;
         long time = (long) (seconds * Math.pow(10,3));
         simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
         //localSearch(allJobs, time, 5);
@@ -88,7 +88,7 @@ public class JobScheduler {
 
         Solution initialSolution = new Solution(bestCost, bestOrder, bestSchedule, bestSetups, null);
         try {
-            Solution s = searchSolution(initialSolution,startTime, seed);
+            Solution s = searchSolution(initialSolution,startTime, stopTime, seed);
             for (int i = s.getImprovements().size() -1; i > 0 ; i--) {
                 hillClimb(s.getImprovements().get(i), startTime, stopTime, seed);
             }
@@ -100,16 +100,19 @@ public class JobScheduler {
     }
 
     private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
-        double T = 250;
-        double alpha = 0.86;
+        double T = 8600;
+        double alpha = 0.65;
         Random generator = new Random(seed);
         do{
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
-                if(!isOverlap(newOrder[swapInfo.getIndex1Swapped()], newOrder[swapInfo.getIndex2Swapped()]))
-                    System.out.println("Hmm");
+//                if(!isOverlap(newOrder[swapInfo.getIndex1Swapped()], newOrder[swapInfo.getIndex2Swapped()]))
+//                    System.out.println("Hmm");
+                Map<Integer, Job> jobsScheduledLater = getJobsScheduledLaterWithLaterInterval(newOrder, swapInfo.getIndex1Swapped());
+//                if(jobsScheduledLater.keySet().contains(swapInfo.getIndex2Swapped()))
+//                    System.out.println("Vree raar");
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -118,16 +121,14 @@ public class JobScheduler {
                 solution.setSetups(setups);
                 solution.setCost(cost);
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
-                costs.add(cost);
-                time.add(System.currentTimeMillis() - start);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble(1)){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
-                costs.add(cost);
-                time.add(System.currentTimeMillis() - start);
             }
+            costs.add(solution.getCost());
+            time.add(System.currentTimeMillis() - start);
             T = alpha * T;
         } while (System.currentTimeMillis() - start < stopTime);
     }
@@ -136,7 +137,7 @@ public class JobScheduler {
         long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
 
             cost = evaluate(newOrder);
@@ -163,12 +164,12 @@ public class JobScheduler {
         // geen verbetering in x tijd volgende
     }
 
-    private Solution searchSolution(Solution solution, long totalStart, int seed){
+    private Solution searchSolution(Solution solution, long totalStart, long stopTime, int seed){
         long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
             // Get new solution
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, improvementFound, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
 
             // Evaluate solution compaired to initial solution
@@ -206,15 +207,55 @@ public class JobScheduler {
         return overlappingJobs;
     }
 
-    private ScheduleSwapInfo getNewOrder(Job[] jobs, Random generator){
+    private Map<Integer, Double> getOverlapAmountFromOverlappingJobs(Map<Integer, Job> overlappingJobs, Job j){
+        Map<Integer, Double> overlapAmountJobs = new HashMap<>();
+        for(Integer overlappingJobIndex : overlappingJobs.keySet()){
+            overlapAmountJobs.put(overlappingJobIndex, (double) getOverlap(j, overlappingJobs.get(overlappingJobIndex)));
+        }
+        return overlapAmountJobs;
+    }
+
+
+
+    private Map<Integer, Job> getJobsScheduledLaterWithEarlierInterval(Job[] jobs, int jIndex){
+        Map<Integer, Job> earlierIntervalJobs = new HashMap<>();
+        for(int i = jIndex; i < jobs.length; i++){
+            if(getOverlap(jobs[i], jobs[jIndex]) <= 0 && jobs[i].getReleaseDate() < jobs[jIndex].getReleaseDate()
+                    && jobs[i].getDueDate() < jobs[jIndex].getDueDate()){
+                earlierIntervalJobs.put(i, jobs[i]);
+            }
+        }
+        return earlierIntervalJobs;
+    }
+
+    private Map<Integer, Job> getJobsScheduledLaterWithLaterInterval(Job[] jobs, int jIndex){
+        Map<Integer, Job> laterIntervalJobs = new HashMap<>();
+        for(int i = jIndex; i < jobs.length; i++){
+            if(getOverlap(jobs[i], jobs[jIndex]) <= 0 && jobs[i].getReleaseDate() > jobs[jIndex].getReleaseDate() && jobs[i].getDueDate() > jobs[jIndex].getDueDate()){
+                laterIntervalJobs.put(i, jobs[i]);
+            }
+        }
+        return laterIntervalJobs;
+    }
+
+    private ScheduleSwapInfo getNewOrder(Job[] jobs, Random generator, long start, long stopTime){
         Job[] reorder = new Job[jobs.length];
 
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        // Onderstaande 2 lijnen in commentaar om niet met overlappende jobs te randomizen
         Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
-        index2 = new ArrayList<>(overlappingJobs.keySet()).get(generator.nextInt(overlappingJobs.keySet().size() - 1));
+//        Map<Integer, Job> earlierIntervalJobs = getJobsScheduledLaterWithEarlierInterval(jobs, index1);
+        Map<Integer, Job> jobCandidates = new HashMap<>();
+        jobCandidates.putAll(overlappingJobs);
+//        jobCandidates.putAll(earlierIntervalJobs);
+        DistributedRandomGenerator weightedRandom = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]));
+        index2 = weightedRandom.getDistributedRandomNumber();
+//        index2 = new ArrayList<>(jobCandidates.keySet()).get(generator.nextInt(jobCandidates.keySet().size() - 1));
+
+        if(System.currentTimeMillis() - start > 10000) {
+            index2 = generator.nextInt(jobs.length-1);
+        }
 
         if (index1 == index2){
             index2 = index1+1;
