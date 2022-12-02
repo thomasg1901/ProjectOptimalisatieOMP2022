@@ -102,8 +102,16 @@ public class Job implements Comparable {
     @Override
     public int compareTo(Object o) {
         Job oJob = (Job) o;
+//        if (this.getDueDate() != oJob.getDueDate()) {
+//            return (this.getDueDate() - this.getDuration()) - (oJob.getDueDate() - oJob.getDuration());
+//        } else if (this.getRejectionPenalty() != oJob.getRejectionPenalty()) {
+//            return (int) (oJob.getRejectionPenalty() - this.getRejectionPenalty());
+//        } else {
+//            return (int) (oJob.getEarlinessPenalty() - this.getEarlinessPenalty());
+//        }
+
         if (this.getDueDate() != oJob.getDueDate()) {
-            return (this.getDueDate() - this.getDuration()) - (oJob.getDueDate() - oJob.getDuration());
+            return (this.getDueDate() - oJob.getDueDate());
         } else if (this.getRejectionPenalty() != oJob.getRejectionPenalty()) {
             return (int) (oJob.getRejectionPenalty() - this.getRejectionPenalty());
         } else {

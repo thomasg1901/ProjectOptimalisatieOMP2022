@@ -2,6 +2,8 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class JobScheduler {
     private String name;
@@ -41,9 +43,9 @@ public class JobScheduler {
         time = new ArrayList<>();
 
         Arrays.sort(this.allJobs);
-        long seconds = 300;
+        long seconds = 60;
         long time = (long) (seconds * Math.pow(10,3));
-        simulatedAnneling(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
+        simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
         //localSearch(allJobs, time, 5);
         System.out.println(costs.size());
 
@@ -97,14 +99,17 @@ public class JobScheduler {
         }
     }
 
-    private void simulatedAnneling(Solution solution, long start, long stopTime, int seed){
+    private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
         double T = 250;
         double alpha = 0.86;
         Random generator = new Random(seed);
         do{
-            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
+                if(!isOverlap(newOrder[swapInfo.getIndex1Swapped()], newOrder[swapInfo.getIndex2Swapped()]))
+                    System.out.println("Hmm");
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -115,7 +120,7 @@ public class JobScheduler {
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
                 costs.add(cost);
                 time.add(System.currentTimeMillis() - start);
-            }else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble(1)){
+            } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble(1)){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
@@ -124,14 +129,15 @@ public class JobScheduler {
                 time.add(System.currentTimeMillis() - start);
             }
             T = alpha * T;
-        }while (System.currentTimeMillis() - start < stopTime);
+        } while (System.currentTimeMillis() - start < stopTime);
     }
 
     private void hillClimb(Solution solution, long start, long stopTime, int seed){
         long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
-            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            Job[] newOrder = swapInfo.getSchedule();
 
             cost = evaluate(newOrder);
             if (cost < bestCost){
@@ -162,7 +168,8 @@ public class JobScheduler {
         Random generator = new Random(seed);
         do{
             // Get new solution
-            Job[] newOrder = getNewOrder(solution.getOrder(), generator);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator);
+            Job[] newOrder = swapInfo.getSchedule();
 
             // Evaluate solution compaired to initial solution
             cost = evaluate(newOrder);
@@ -181,15 +188,38 @@ public class JobScheduler {
         return solution;
     }
 
-    private Job[] getNewOrder(Job[] jobs, Random generator){
+    private boolean isOverlap(Job j1, Job j2){
+        return j1.getDueDate() > j2.getReleaseDate() && j1.getReleaseDate() < j2.getDueDate();
+    }
+
+    private int getOverlap(Job j1, Job j2){
+        return Math.min(j1.getDueDate(), j2.getDueDate()) - Math.max(j1.getReleaseDate(), j2.getReleaseDate());
+    }
+
+    private Map<Integer, Job> getOverlappingJobs(Job[] jobs, Job j){
+        Map<Integer, Job> overlappingJobs = new HashMap<>();
+        for(int i = 0; i < jobs.length; i++){
+            if(getOverlap(j, jobs[i]) > 0 && j != jobs[i]){
+                overlappingJobs.put(i, jobs[i]);
+            }
+        }
+        return overlappingJobs;
+    }
+
+    private ScheduleSwapInfo getNewOrder(Job[] jobs, Random generator){
+        Job[] reorder = new Job[jobs.length];
+
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
+
+        // Onderstaande 2 lijnen in commentaar om niet met overlappende jobs te randomizen
+        Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
+        index2 = new ArrayList<>(overlappingJobs.keySet()).get(generator.nextInt(overlappingJobs.keySet().size() - 1));
 
         if (index1 == index2){
             index2 = index1+1;
         }
 
-        Job[] reorder = new Job[jobs.length];
         for (int i = 0; i < jobs.length;i++){
             Job j = jobs[i];
             if (i == index1)
@@ -199,7 +229,7 @@ public class JobScheduler {
 
             reorder[i] = new Job(j.getJobID(), j.getDuration(), j.getReleaseDate(), j.getDueDate(), j.getEarlinessPenalty(), j.getRejectionPenalty(), j.getSetupTimes());
         }
-        return reorder;
+        return new ScheduleSwapInfo(reorder, index1, index2);
     }
 
     private double evaluate(Job[] jobs){
@@ -247,9 +277,8 @@ public class JobScheduler {
     }
 
     private int calcSetup(int earliestFinish, int duration){
-        int finishSetup = earliestFinish;
         int startSetup = earliestFinish - duration;
-        Unavailability unavailabilityOverlap = overlapUnavailable(startSetup, finishSetup, unavailabilities);
+        Unavailability unavailabilityOverlap = overlapUnavailable(startSetup, earliestFinish, unavailabilities);
         if(unavailabilityOverlap != null){
             return calcSetup(unavailabilityOverlap.getStart() -1, duration);
         }
@@ -284,7 +313,7 @@ public class JobScheduler {
             start = finishSetup;
             finish = start+job.getDuration();
         } else {
-            start = t > job.getReleaseDate()? t : job.getReleaseDate();
+            start = Math.max(t, job.getReleaseDate());
             finish = start+job.getDuration();
             startSetup = start;
         }

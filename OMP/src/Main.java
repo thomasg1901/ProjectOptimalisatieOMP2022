@@ -20,12 +20,12 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-        //findSolutionsA("./OMP/src/resources/");
-        //findSolutionsB("./OMP/src/resources/");
+        findSolutionsA("./OMP/src/resources/");
+        findSolutionsB("./OMP/src/resources/");
         //findSolution("OMP/src/resources/B-400-90.json","./OMP/output");
 
 //        Voor Jef:
-        findSolutionsA("./src/resources/");
+//        findSolutionsA("./src/resources/");
 //        findSolutionsB("./src/resources/");
 
     }
@@ -34,7 +34,7 @@ public class Main {
         String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
         for(String resourceName : resourcesA){
             resourceName = basePath+resourceName;
-            findSolution(resourceName, "./output");
+            findSolution(resourceName, "./OMP/output");
         }
     }
 
