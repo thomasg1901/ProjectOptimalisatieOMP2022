@@ -75,8 +75,6 @@ public class JobScheduler {
         return new Solution(bestCost, bestOrder, bestSchedule, bestSetups, null);
     }
 
-
-
     private void localSearch(Job[] initialOrder, long stopTime, int seed){
         long startTime = System.currentTimeMillis();
 
@@ -250,7 +248,7 @@ public class JobScheduler {
         jobCandidates.putAll(overlappingJobs);
 //        jobCandidates.putAll(earlierIntervalJobs);
         DistributedRandomGenerator weightedRandom = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]));
-        index2 = weightedRandom.getDistributedRandomNumber();
+        index2 = weightedRandom.getDistributedRandomNumber(generator);
 //        index2 = new ArrayList<>(jobCandidates.keySet()).get(generator.nextInt(jobCandidates.keySet().size() - 1));
 
         if(System.currentTimeMillis() - start > 10000) {

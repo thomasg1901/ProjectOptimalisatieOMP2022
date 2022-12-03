@@ -1,5 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class DistributedRandomGenerator {
     private Map<Integer, Double> distribution;
@@ -13,8 +14,8 @@ public class DistributedRandomGenerator {
         }
     }
 
-    public int getDistributedRandomNumber() {
-        double rand = Math.random();
+    public int getDistributedRandomNumber(Random generator) {
+        double rand = generator.nextDouble();
         double ratio = 1.0f / distSum;
         double tempDist = 0;
         for (Integer i : distribution.keySet()) {
