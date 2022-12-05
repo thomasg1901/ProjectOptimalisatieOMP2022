@@ -24,6 +24,12 @@ public class JobScheduler {
 
     private double biggestLeap = 0;
 
+    private int seed;
+
+    private int timeLimit;
+
+    private int maxThreads;
+
 
     // Local search
     private Job[] bestOrder;
@@ -32,7 +38,7 @@ public class JobScheduler {
 
     private double bestCost;
 
-    public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities) {
+    public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities, int seed, int timeLimit, int maxThreads) {
         this.name = name;
         this.weightDuration = weightDuration;
         this.horizon = horizon;
@@ -43,9 +49,11 @@ public class JobScheduler {
         time = new ArrayList<>();
 
         Arrays.sort(this.allJobs);
-        long seconds = 300;
-        long time = (long) (seconds * Math.pow(10,3));
-        simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
+        this.seed = seed;
+        this.maxThreads = maxThreads;
+        this.timeLimit = timeLimit;
+        long time = (long) (this.timeLimit * Math.pow(10,3));
+        simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed);
 
         writeToFile(costs, this.name);
         writeToFile(this.time, name+"_times");
@@ -133,7 +141,7 @@ public class JobScheduler {
         long improvementFound = System.currentTimeMillis();
         Random generator = new Random(seed);
         do{
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, improvementFound, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
 
             cost = evaluate(newOrder);
@@ -240,7 +248,7 @@ public class JobScheduler {
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        if(System.currentTimeMillis() - start <= 10000){
+        if(System.currentTimeMillis() - start > 2000){
             Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
             Map<Integer, Job> jobCandidates = new HashMap<>();
             jobCandidates.putAll(overlappingJobs);

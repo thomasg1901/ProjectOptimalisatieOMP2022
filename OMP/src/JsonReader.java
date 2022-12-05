@@ -56,14 +56,14 @@ public class JsonReader {
         return (String)(object.get("name"));
     }
 
-    public static JobScheduler createJobSchedulerFromFile(String resourceName) throws IOException {
+    public static JobScheduler createJobSchedulerFromFile(String resourceName, int seed, int timeLimit, int maxThreads) throws IOException {
         String name = getNameFromFile(resourceName);
         double weightDuration = JsonReader.getWeightDurationFromFile(resourceName);
         int horizon = JsonReader.getHorizonFromFile(resourceName);
         Job[] allJobs = JsonReader.getJoblistFromFile(resourceName);
         Unavailability[] unavailabilities = JsonReader.getUnavailabilityPeriodsFromFile(resourceName);
 
-        return new JobScheduler(name, weightDuration, horizon, allJobs, unavailabilities);
+        return new JobScheduler(name, weightDuration, horizon, allJobs, unavailabilities, seed, timeLimit, maxThreads);
     }
 
     public static Unavailability[] getUnavailabilityPeriodsFromFile(String resourceName) throws IOException {
@@ -80,6 +80,7 @@ public class JsonReader {
 
 
     private static JSONObject getJsonObject(String resourceName) throws IOException {
+
         String is = new String(Files.readAllBytes(Paths.get(resourceName)));
         JSONTokener tokener = new JSONTokener(is);
         JSONObject object = new JSONObject(tokener);
