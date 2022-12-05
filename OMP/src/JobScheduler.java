@@ -38,7 +38,7 @@ public class JobScheduler {
 
     private double bestCost;
 
-    public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities, int seed, int timeLimit, int maxThreads) {
+    public JobScheduler(String name, double weightDuration, int horizon, Job[] allJobs, Unavailability[] unavailabilities, int seed, int timeLimit, int maxThreads, double alpha, double temp) {
         this.name = name;
         this.weightDuration = weightDuration;
         this.horizon = horizon;
@@ -53,7 +53,7 @@ public class JobScheduler {
         this.maxThreads = maxThreads;
         this.timeLimit = timeLimit;
         long time = (long) (this.timeLimit * Math.pow(10,3));
-        simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed);
+        simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed, alpha, temp);
 
         writeToFile(costs, this.name);
         writeToFile(this.time, name+"_times");
@@ -103,17 +103,16 @@ public class JobScheduler {
         }
     }
 
-    private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
-        double T = 550;
-        double alpha = 0.96;
+    private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed, double alpha, double temp){
+//        double T = 550;
+//        double alpha = 0.96;
+        double T = temp;
         Random generator = new Random(seed);
         do{
             ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
-                Map<Integer, Job> jobsScheduledLater = getJobsScheduledLaterWithLaterInterval(newOrder, swapInfo.getIndex1Swapped());
-
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -121,8 +120,7 @@ public class JobScheduler {
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
-
-                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
+//                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);

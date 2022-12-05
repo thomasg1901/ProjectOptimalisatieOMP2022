@@ -13,13 +13,13 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        String inputFilePath = args[0];
-        String solutionFilePath = args[1];
-        int seed = Integer.parseInt(args[2]);
-        int timeLimit = Integer.parseInt(args[3]);
-        int maxThreads = Integer.parseInt(args[4]);
-
-        findSolution(inputFilePath, solutionFilePath, seed, timeLimit, maxThreads);
+//        String inputFilePath = args[0];
+//        String solutionFilePath = args[1];
+//        int seed = Integer.parseInt(args[2]);
+//        int timeLimit = Integer.parseInt(args[3]);
+//        int maxThreads = Integer.parseInt(args[4]);
+//
+//        findSolution(inputFilePath, solutionFilePath, seed, timeLimit, maxThreads);
 
 
 
@@ -31,8 +31,14 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-        //findSolutionsA("./OMP/src/resources/");
-        //findSolutionsB("./OMP/src/resources/");
+//        findSolutionsA("./src/resources/", 5, 10, 1);
+//        findSolutionsB("./src/resources/", 5, 10, 1);
+        for(double alpha = 0.5; alpha <= 0.95; alpha+=0.05){
+            for(double temp = 500; temp <= 10000; temp+=100){
+                findSolution("./src/resources/A-400-90.json", "sol-A-400-90", 5, 10, 1, alpha, temp);
+            }
+        }
+
 
 
 //        Voor Jef:
@@ -41,28 +47,28 @@ public class Main {
 
     }
 
-    private static void findSolutionsA(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
-        String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
-        for(String resourceName : resourcesA){
-            resourceName = basePath+resourceName;
-            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
-        }
-    }
+//    private static void findSolutionsA(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
+//        String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
+//        for(String resourceName : resourcesA){
+//            resourceName = basePath+resourceName;
+//            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
+//        }
+//    }
+//
+//    private static void findSolutionsB(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
+//        String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
+//        for(String resourceName : resourcesB){
+//            resourceName = basePath+resourceName;
+//            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
+//        }
+//    }
 
-    private static void findSolutionsB(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
-        String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
-        for(String resourceName : resourcesB){
-            resourceName = basePath+resourceName;
-            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
-        }
-    }
-
-    private static void findSolution(String inputPath, String outputPath, int seed, int timeLimit, int maxThreads) throws IOException {
-        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath, seed, timeLimit, maxThreads);
+    private static void findSolution(String inputPath, String outputPath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
+        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath, seed, timeLimit, maxThreads, alpha, temp);
         //visualize(scheduler);
-        System.out.println("Cost of " + scheduler.getName() + ": " + String.valueOf(scheduler.getCost()));
+        System.out.println("Cost of " + scheduler.getName() + " for alpha = " + alpha + " and T = " + temp + " : " + String.valueOf(scheduler.getCost()));
         JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
-        out.writeSolutionToJson(outputPath);
+//        out.writeSolutionToJson(outputPath);
     }
 
     private static void visualize(JobScheduler scheduler){
