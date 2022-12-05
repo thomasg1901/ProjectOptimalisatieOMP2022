@@ -13,26 +13,17 @@ import java.util.Map;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-        String inputFilePath = args[0];
-        String solutionFilePath = args[1];
-        int seed = Integer.parseInt(args[2]);
-        int timeLimit = Integer.parseInt(args[3]);
-        int maxThreads = Integer.parseInt(args[4]);
+//        String inputFilePath = args[0];
+//        String solutionFilePath = args[1];
+//        int seed = Integer.parseInt(args[2]);
+//        int timeLimit = Integer.parseInt(args[3]);
+//        int maxThreads = Integer.parseInt(args[4]);
+//
+//        findSolution(inputFilePath, solutionFilePath, seed, timeLimit, maxThreads);
 
-        findSolution(inputFilePath, solutionFilePath, seed, timeLimit, maxThreads);
 
-
-
-//        String resourceName = "./OMP/src/resources/TOY-20-10.json";
-//        resourceName = "./OMP/file.json";
-
-//        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
-
-//        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
-//        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
-//        out.writeSolutionToJson("./OMP/output");
-        //findSolutionsA("./OMP/src/resources/");
-        //findSolutionsB("./OMP/src/resources/");
+        findSolutionsA("./OMP/src/resources/", 5, 30, 1);
+        findSolutionsB("./OMP/src/resources/",5,30,1);
 
 
 //        Voor Jef:
@@ -45,7 +36,7 @@ public class Main {
         String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
         for(String resourceName : resourcesA){
             resourceName = basePath+resourceName;
-            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
+            findSolution(resourceName, "./output", seed, timeLimit, maxThreads);
         }
     }
 
@@ -53,7 +44,7 @@ public class Main {
         String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
         for(String resourceName : resourcesB){
             resourceName = basePath+resourceName;
-            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
+            findSolution(resourceName, "./output", seed, timeLimit, maxThreads);
         }
     }
 

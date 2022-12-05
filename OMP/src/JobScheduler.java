@@ -104,16 +104,15 @@ public class JobScheduler {
     }
 
     private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
-        double T = 550;
-        double alpha = 0.96;
+        double T = 12800;
+        double alpha = 0.58;
         Random generator = new Random(seed);
+        long improvementFound = System.currentTimeMillis();
         do{
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, improvementFound, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
-                Map<Integer, Job> jobsScheduledLater = getJobsScheduledLaterWithLaterInterval(newOrder, swapInfo.getIndex1Swapped());
-
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -122,16 +121,21 @@ public class JobScheduler {
                 solution.setSetups(setups);
                 solution.setCost(cost);
 
+                costs.add(solution.getCost());
+                time.add(System.currentTimeMillis() - start);
+                improvementFound = System.currentTimeMillis();
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
+                costs.add(solution.getCost());
+                time.add(System.currentTimeMillis() - start);
+                improvementFound = System.currentTimeMillis();
             }
 
-            costs.add(solution.getCost());
-            time.add(System.currentTimeMillis() - start);
+
 
             T = alpha * T;
         } while (System.currentTimeMillis() - start < stopTime);
@@ -248,7 +252,7 @@ public class JobScheduler {
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        if(System.currentTimeMillis() - start > 2000){
+        if(System.currentTimeMillis() - start > 860){
             Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
             Map<Integer, Job> jobCandidates = new HashMap<>();
             jobCandidates.putAll(overlappingJobs);
