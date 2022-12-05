@@ -43,11 +43,9 @@ public class JobScheduler {
         time = new ArrayList<>();
 
         Arrays.sort(this.allJobs);
-        long seconds = 100;
+        long seconds = 300;
         long time = (long) (seconds * Math.pow(10,3));
         simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, 5);
-        //localSearch(allJobs, time, 5);
-        System.out.println(costs.size());
 
         writeToFile(costs, this.name);
         writeToFile(this.time, name+"_times");
@@ -98,19 +96,16 @@ public class JobScheduler {
     }
 
     private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
-        double T = 8600;
-        double alpha = 0.65;
+        double T = 550;
+        double alpha = 0.96;
         Random generator = new Random(seed);
         do{
             ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
-//                if(!isOverlap(newOrder[swapInfo.getIndex1Swapped()], newOrder[swapInfo.getIndex2Swapped()]))
-//                    System.out.println("Hmm");
                 Map<Integer, Job> jobsScheduledLater = getJobsScheduledLaterWithLaterInterval(newOrder, swapInfo.getIndex1Swapped());
-//                if(jobsScheduledLater.keySet().contains(swapInfo.getIndex2Swapped()))
-//                    System.out.println("Vree raar");
+
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -118,15 +113,18 @@ public class JobScheduler {
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
+
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
-            } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble(1)){
+            } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
             }
+
             costs.add(solution.getCost());
             time.add(System.currentTimeMillis() - start);
+
             T = alpha * T;
         } while (System.currentTimeMillis() - start < stopTime);
     }
@@ -242,17 +240,12 @@ public class JobScheduler {
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
-//        Map<Integer, Job> earlierIntervalJobs = getJobsScheduledLaterWithEarlierInterval(jobs, index1);
-        Map<Integer, Job> jobCandidates = new HashMap<>();
-        jobCandidates.putAll(overlappingJobs);
-//        jobCandidates.putAll(earlierIntervalJobs);
-        DistributedRandomGenerator weightedRandom = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]));
-        index2 = weightedRandom.getDistributedRandomNumber(generator);
-//        index2 = new ArrayList<>(jobCandidates.keySet()).get(generator.nextInt(jobCandidates.keySet().size() - 1));
-
-        if(System.currentTimeMillis() - start > 10000) {
-            index2 = generator.nextInt(jobs.length-1);
+        if(System.currentTimeMillis() - start <= 10000){
+            Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
+            Map<Integer, Job> jobCandidates = new HashMap<>();
+            jobCandidates.putAll(overlappingJobs);
+            DistributedRandomGenerator weightedRandom = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]));
+            index2 = weightedRandom.getDistributedRandomNumber(generator);
         }
 
         if (index1 == index2){
