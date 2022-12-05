@@ -54,9 +54,6 @@ public class JobScheduler {
         this.timeLimit = timeLimit;
         long time = (long) (this.timeLimit * Math.pow(10,3));
         simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed, alpha, temp);
-
-        writeToFile(costs, this.name);
-        writeToFile(this.time, name+"_times");
     }
 
     private void writeToFile(List list,String name){
@@ -120,16 +117,19 @@ public class JobScheduler {
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
+                costs.add(solution.getCost());
+                time.add(System.currentTimeMillis() - start);
 //                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
+                costs.add(solution.getCost());
+                time.add(System.currentTimeMillis() - start);
             }
 
-            costs.add(solution.getCost());
-            time.add(System.currentTimeMillis() - start);
+
 
             T = alpha * T;
         } while (System.currentTimeMillis() - start < stopTime);
@@ -246,7 +246,7 @@ public class JobScheduler {
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        if(System.currentTimeMillis() - start > 2000){
+        if(System.currentTimeMillis() - start > 500){
             Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
             Map<Integer, Job> jobCandidates = new HashMap<>();
             jobCandidates.putAll(overlappingJobs);
@@ -425,6 +425,8 @@ public class JobScheduler {
         return job.getDueDate() > t + job.getSetupTimes()[prevJob] + job.getDuration();
     }
 
+    public List<Double> getCosts(){return costs;}
+    public List<Long> getTimes(){return time;}
     public String getName() {
         return name;
     }

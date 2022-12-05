@@ -33,11 +33,16 @@ public class Main {
 //        out.writeSolutionToJson("./OMP/output");
 //        findSolutionsA("./src/resources/", 5, 10, 1);
 //        findSolutionsB("./src/resources/", 5, 10, 1);
-        for(double alpha = 0.5; alpha <= 0.95; alpha+=0.05){
+        JsonWriter out = new JsonWriter();
+
+        for(double alpha = 0.5; alpha <= 0.99; alpha+=0.05){
             for(double temp = 500; temp <= 10000; temp+=100){
-                findSolution("./src/resources/A-400-90.json", "sol-A-400-90", 5, 10, 1, alpha, temp);
+                JobScheduler result = findSolution("./OMP/src/resources/B-100-30.json", "sol-B-400-90", 5, 1, 1, alpha, temp);
+                out.createGridSearchJson(result.getTimes(), result.getCosts(), alpha, temp);
             }
         }
+
+        out.writeGridSearchToJson("gridsearchB-400-90.json");
 
 
 
@@ -63,12 +68,14 @@ public class Main {
 //        }
 //    }
 
-    private static void findSolution(String inputPath, String outputPath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
+    private static JobScheduler findSolution(String inputPath, String outputPath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
         JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath, seed, timeLimit, maxThreads, alpha, temp);
         //visualize(scheduler);
         System.out.println("Cost of " + scheduler.getName() + " for alpha = " + alpha + " and T = " + temp + " : " + String.valueOf(scheduler.getCost()));
+
         JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson(outputPath);
+        return scheduler;
     }
 
     private static void visualize(JobScheduler scheduler){
