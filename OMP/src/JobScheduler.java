@@ -54,10 +54,13 @@ public class JobScheduler {
         this.timeLimit = timeLimit;
         long time = (long) (this.timeLimit * Math.pow(10,3));
         simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed, alpha, temp);
+
+        writeToFile(costs, name);
+        writeToFile(this.time, name+"_times");
     }
 
     private void writeToFile(List list,String name){
-        final String FILENAME = name+".txt";
+        final String FILENAME = "OMP/times/"+name+".txt";
         try ( BufferedWriter bw = new BufferedWriter (new FileWriter(FILENAME)) )
         {
             for (var line : list) {
@@ -119,7 +122,7 @@ public class JobScheduler {
                 solution.setCost(cost);
                 costs.add(solution.getCost());
                 time.add(System.currentTimeMillis() - start);
-//                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
+                System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
                 solution.setSchedule(schedule);
@@ -128,9 +131,6 @@ public class JobScheduler {
                 costs.add(solution.getCost());
                 time.add(System.currentTimeMillis() - start);
             }
-
-
-
             T = alpha * T;
         } while (System.currentTimeMillis() - start < stopTime);
     }
@@ -246,7 +246,7 @@ public class JobScheduler {
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        if(System.currentTimeMillis() - start > 500){
+        if(System.currentTimeMillis() - start > 2000){
             Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
             Map<Integer, Job> jobCandidates = new HashMap<>();
             jobCandidates.putAll(overlappingJobs);

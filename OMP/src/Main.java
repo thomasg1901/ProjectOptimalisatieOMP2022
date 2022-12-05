@@ -31,13 +31,14 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
+//        findSolution("./OMP/src/resources/B-400-90.json", "sol-B-400-90", 5, 300, 1, 0.6, 1000);
 //        findSolutionsA("./src/resources/", 5, 10, 1);
 //        findSolutionsB("./src/resources/", 5, 10, 1);
         JsonWriter out = new JsonWriter();
 
-        for(double alpha = 0.5; alpha <= 0.99; alpha+=0.05){
-            for(double temp = 500; temp <= 10000; temp+=100){
-                JobScheduler result = findSolution("./OMP/src/resources/B-100-30.json", "sol-B-400-90", 5, 1, 1, alpha, temp);
+        for(double alpha = 0.6; alpha <= 0.76; alpha+=0.05){
+            for(double temp = 3500; temp <= 10000; temp+=100){
+                JobScheduler result = findSolution("./OMP/src/resources/B-400-90.json", "sol-B-400-90", 5, 30, 1, alpha, temp);
                 out.createGridSearchJson(result.getTimes(), result.getCosts(), alpha, temp);
             }
         }
