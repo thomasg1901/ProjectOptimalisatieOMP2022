@@ -20,25 +20,6 @@ public class Main {
         int maxThreads = Integer.parseInt(args[4]);
 
         findSolution(inputFilePath, solutionFilePath, seed, timeLimit, maxThreads);
-
-
-
-//        String resourceName = "./OMP/src/resources/TOY-20-10.json";
-//        resourceName = "./OMP/file.json";
-
-//        JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(resourceName);
-
-//        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
-//        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
-//        out.writeSolutionToJson("./OMP/output");
-        //findSolutionsA("./OMP/src/resources/");
-        //findSolutionsB("./OMP/src/resources/");
-
-
-//        Voor Jef:
-//        findSolutionsA("./src/resources/");
-//        findSolutionsB("./src/resources/");
-
     }
 
     private static void findSolutionsA(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {

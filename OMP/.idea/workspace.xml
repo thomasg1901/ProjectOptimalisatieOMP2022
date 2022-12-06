@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="executable_group5" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="Check if overlap with unscheduled to schedule after">
-      <change afterPath="$PROJECT_DIR$/A-100-30.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/A-200-30.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/A-400-90.txt" afterDir="false" />
+    <list default="true" id="350eae76-1532-4953-961c-1a698f1f60a0" name="Changes" comment="Final push">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/executable_group5.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/META-INF/MANIFEST.MF" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/sol-A-100-30.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-100-30.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/sol-A-200-30.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-200-30.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output/sol-A-400-90.json" beforeDir="false" afterPath="$PROJECT_DIR$/output/sol-A-400-90.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-100-30.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-200-30.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-A-400-90.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-B-100-30.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-B-200-30.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output/sol-B-400-90.json" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/JobScheduler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/JobScheduler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/JobScheduler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/JobScheduler.class" afterDir="false" />
@@ -30,6 +38,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="gridsearch" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
@@ -49,24 +62,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/arijnborzo/ProjectOptimalisatieOMP2022/OMP&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "last_opened_file_path": "/Users/arijnborzo/ProjectOptimalisatieOMP2022/OMP",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="19" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="OMP" />
+      <option name="PROGRAM_PARAMETERS" value="./src/resources/B-400-90.json new-sol-B-400-90.json 1 10 2" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Main" />
         <item itemvalue="Application.Main" />
       </list>
     </recent_temporary>
@@ -192,7 +212,35 @@
       <option name="project" value="LOCAL" />
       <updated>1669061351525</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Added support for executable jar file (Assignment)">
+      <created>1670246284143</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1670246284143</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Gridsearch test">
+      <created>1670249912869</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1670249912869</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Modified plotter">
+      <created>1670267680333</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1670267680333</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Final push">
+      <created>1670343619715</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1670343619715</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -218,27 +266,11 @@
     <MESSAGE value="job validation" />
     <MESSAGE value="intial setup removed" />
     <MESSAGE value="Check if overlap with unscheduled to schedule after" />
-    <option name="LAST_COMMIT_MESSAGE" value="Check if overlap with unscheduled to schedule after" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>40</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Main.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/JobScheduler.java</url>
-          <line>98</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="Added support for executable jar file (Assignment)" />
+    <MESSAGE value="Gridsearch test" />
+    <MESSAGE value="Added plotter for gridsearch test" />
+    <MESSAGE value="Modified plotter" />
+    <MESSAGE value="Final push" />
+    <option name="LAST_COMMIT_MESSAGE" value="Final push" />
   </component>
 </project>

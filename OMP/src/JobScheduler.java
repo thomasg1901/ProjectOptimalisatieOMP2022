@@ -55,8 +55,8 @@ public class JobScheduler {
         long time = (long) (this.timeLimit * Math.pow(10,3));
         simulatedAnnealing(getInitialSolution(allJobs), System.currentTimeMillis(), time, this.seed);
 
-        writeToFile(costs, this.name);
-        writeToFile(this.time, name+"_times");
+//        writeToFile(costs, this.name);
+//        writeToFile(this.time, name+"_times");
     }
 
     private void writeToFile(List list,String name){
@@ -104,16 +104,14 @@ public class JobScheduler {
     }
 
     private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed){
-        double T = 550;
-        double alpha = 0.96;
+        double T = 4800;
+        double alpha = 0.8;
         Random generator = new Random(seed);
         do{
             ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
-                Map<Integer, Job> jobsScheduledLater = getJobsScheduledLaterWithLaterInterval(newOrder, swapInfo.getIndex1Swapped());
-
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -121,7 +119,6 @@ public class JobScheduler {
                 solution.setSchedule(schedule);
                 solution.setSetups(setups);
                 solution.setCost(cost);
-
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Global improvement found: " + cost);
             } else if(Math.exp(-(cost - this.bestCost)/(T)) > generator.nextDouble()){
                 solution.setOrder(newOrder);
@@ -164,8 +161,7 @@ public class JobScheduler {
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Local improvement found: " + cost);
             }
 
-        }while (System.currentTimeMillis() - start < stopTime && System.currentTimeMillis() - improvementFound < 10000);
-        // geen verbetering in x tijd volgende
+        } while (System.currentTimeMillis() - start < stopTime && System.currentTimeMillis() - improvementFound < 10000);
     }
 
     private Solution searchSolution(Solution solution, long totalStart, long stopTime, int seed){
@@ -218,8 +214,6 @@ public class JobScheduler {
         }
         return overlapAmountJobs;
     }
-
-
 
     private Map<Integer, Job> getJobsScheduledLaterWithEarlierInterval(Job[] jobs, int jIndex){
         Map<Integer, Job> earlierIntervalJobs = new HashMap<>();
@@ -375,7 +369,6 @@ public class JobScheduler {
     }
 
     private Unavailability overlapUnavailable(int startSetup, int finish, Unavailability[] unavailabilities) {
-        //Mogelijke verbetering: separation van setup & job processing (setup voor unavailability & processing erna bv.)
         for(Unavailability unavailability: unavailabilities){
             if(isInPeriod(unavailability.getStart(), unavailability.getEnd(), startSetup))
                 return unavailability;
