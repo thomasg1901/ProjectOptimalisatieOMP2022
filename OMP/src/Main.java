@@ -31,20 +31,19 @@ public class Main {
 //        System.out.println("Cost of " + resourceName + ": " + String.valueOf(scheduler.getCost()));
 //        JsonWriter out = new JsonWriter(scheduler.getName(), scheduler.getSchedule(), scheduler.getSetups(), scheduler.getCost());
 //        out.writeSolutionToJson("./OMP/output");
-//        findSolution("./OMP/src/resources/B-400-90.json", "sol-B-400-90", 5, 300, 1, 0.6, 1000);
-//        findSolutionsA("./src/resources/", 5, 10, 1);
-//        findSolutionsB("./src/resources/", 5, 10, 1);
+//        findSolution("./src/resources/B-400-90.json", "sol-B-400-90", 5, 130, 1, 0.8, 4080);
+        findSolutionsA("./src/resources/", 5, 60, 1, 0.8, 4080);
+        findSolutionsB("./src/resources/", 5, 60, 1, 0.8, 4080);
         JsonWriter out = new JsonWriter();
 
-        for(double alpha = 0.6; alpha <= 0.76; alpha+=0.05){
-            for(double temp = 3500; temp <= 10000; temp+=100){
-                JobScheduler result = findSolution("./OMP/src/resources/B-400-90.json", "sol-B-400-90", 5, 30, 1, alpha, temp);
-                out.createGridSearchJson(result.getTimes(), result.getCosts(), alpha, temp);
-            }
-        }
+//        for(double alpha = 0.7; alpha <= 0.91; alpha+=0.05){
+//            for(double temp = 4900; temp <= 7000; temp+=300){
+//                JobScheduler result = findSolution("./src/resources/A-400-90.json", "sol-A-400-90", 5, 150, 1, alpha, temp);
+//                out.createGridSearchJson(result.getTimes(), result.getCosts(), alpha, temp);
+//            }
+//        }
 
-        out.writeGridSearchToJson("gridsearchB-400-90.json");
-
+//        out.writeGridSearchToJson("gridsearchA-400-90.json");
 
 
 //        Voor Jef:
@@ -53,21 +52,21 @@ public class Main {
 
     }
 
-//    private static void findSolutionsA(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
-//        String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
-//        for(String resourceName : resourcesA){
-//            resourceName = basePath+resourceName;
-//            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
-//        }
-//    }
-//
-//    private static void findSolutionsB(String basePath, int seed, int timeLimit, int maxThreads) throws IOException {
-//        String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
-//        for(String resourceName : resourcesB){
-//            resourceName = basePath+resourceName;
-//            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads);
-//        }
-//    }
+    private static void findSolutionsA(String basePath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
+        String[] resourcesA = new String[]{"A-100-30.json","A-200-30.json","A-400-90.json"};
+        for(String resourceName : resourcesA){
+            resourceName = basePath+resourceName;
+            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads, alpha, temp);
+        }
+    }
+
+    private static void findSolutionsB(String basePath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
+        String[] resourcesB = new String[]{"B-100-30.json","B-200-30.json","B-400-90.json"};
+        for(String resourceName : resourcesB){
+            resourceName = basePath+resourceName;
+            findSolution(resourceName, "./OMP/output", seed, timeLimit, maxThreads, alpha, temp);
+        }
+    }
 
     private static JobScheduler findSolution(String inputPath, String outputPath, int seed, int timeLimit, int maxThreads, double alpha, double temp) throws IOException {
         JobScheduler scheduler = JsonReader.createJobSchedulerFromFile(inputPath, seed, timeLimit, maxThreads, alpha, temp);

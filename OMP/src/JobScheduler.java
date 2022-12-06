@@ -60,7 +60,7 @@ public class JobScheduler {
     }
 
     private void writeToFile(List list,String name){
-        final String FILENAME = "OMP/times/"+name+".txt";
+        final String FILENAME = "./times/"+name+".txt";
         try ( BufferedWriter bw = new BufferedWriter (new FileWriter(FILENAME)) )
         {
             for (var line : list) {
@@ -106,13 +106,15 @@ public class JobScheduler {
     private void simulatedAnnealing(Solution solution, long start, long stopTime, int seed, double alpha, double temp){
 //        double T = 550;
 //        double alpha = 0.96;
+        long improvementFound = System.currentTimeMillis();
         double T = temp;
         Random generator = new Random(seed);
         do{
-            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, start, stopTime);
+            ScheduleSwapInfo swapInfo = getNewOrder(solution.getOrder(), generator, improvementFound, stopTime);
             Job[] newOrder = swapInfo.getSchedule();
             double cost = evaluate(newOrder);
             if(cost < this.bestCost){
+                improvementFound = System.currentTimeMillis();
                 bestSchedule = schedule;
                 bestSetups = setups;
                 bestCost = cost;
@@ -161,7 +163,6 @@ public class JobScheduler {
                 improvementFound = System.currentTimeMillis();
                 System.out.println("[" + (System.currentTimeMillis() - start) + "ms] Local improvement found: " + cost);
             }
-
         }while (System.currentTimeMillis() - start < stopTime && System.currentTimeMillis() - improvementFound < 10000);
         // geen verbetering in x tijd volgende
     }
@@ -209,6 +210,21 @@ public class JobScheduler {
         return overlappingJobs;
     }
 
+    private int counter = 0;
+
+    private Map<String, Integer> getLongestOverlapSequenceFromStartIndex(Job[] jobs, int startIndex){
+        Map<String, Integer> indexInfo = new HashMap<>();
+        indexInfo.put("minIndex", startIndex);
+        int i = startIndex+1;
+        while(i < jobs.length && getOverlap(jobs[startIndex], jobs[i]) > 1000 && i < startIndex+4){
+            i++;
+        }
+        indexInfo.put("maxIndex", i-1);
+//        counter++;
+//        System.out.println(counter);
+        return indexInfo;
+    }
+
     private Map<Integer, Double> getOverlapAmountFromOverlappingJobs(Map<Integer, Job> overlappingJobs, Job j){
         Map<Integer, Double> overlapAmountJobs = new HashMap<>();
         for(Integer overlappingJobIndex : overlappingJobs.keySet()){
@@ -216,8 +232,6 @@ public class JobScheduler {
         }
         return overlapAmountJobs;
     }
-
-
 
     private Map<Integer, Job> getJobsScheduledLaterWithEarlierInterval(Job[] jobs, int jIndex){
         Map<Integer, Job> earlierIntervalJobs = new HashMap<>();
@@ -240,23 +254,73 @@ public class JobScheduler {
         return laterIntervalJobs;
     }
 
+    private Map<Integer, Job> getJobsWithEarlierInterval(Job[] jobs, int jIndex){
+        Map<Integer, Job> earlierIntervalJobs = new HashMap<>();
+        for(int i = 0; i < jobs.length; i++){
+            if(getOverlap(jobs[i], jobs[jIndex]) <= 0 && jobs[i].getReleaseDate() < jobs[jIndex].getReleaseDate()
+                    && jobs[i].getDueDate() < jobs[jIndex].getDueDate() && jobs[i] != jobs[jIndex]){
+                earlierIntervalJobs.put(i, jobs[i]);
+            }
+        }
+        return earlierIntervalJobs;
+    }
+
+    private Map<Integer, Job> getJobsWithLaterInterval(Job[] jobs, int jIndex){
+        Map<Integer, Job> laterIntervalJobs = new HashMap<>();
+        for(int i = 0; i < jobs.length; i++){
+            if(getOverlap(jobs[i], jobs[jIndex]) <= 0 && jobs[i].getReleaseDate() > jobs[jIndex].getReleaseDate() && jobs[i].getDueDate() > jobs[jIndex].getDueDate()  && jobs[i] != jobs[jIndex]){
+                laterIntervalJobs.put(i, jobs[i]);
+            }
+        }
+        return laterIntervalJobs;
+    }
+
+    private Job[] reverseJobs(Job[] allJobs, int index1, int index2){
+        System.out.println("Reversing from " + index1 + " to " + index2);
+        int minIndex = Math.min(index1, index2);
+//        minIndex = Math.max(0, minIndex);
+        int maxIndex = Math.max(index1, index2);
+//        maxIndex = Math.min(allJobs.length-1, maxIndex);
+        for (int i = minIndex; i < maxIndex; i++) {
+            Job job1 = allJobs[i];
+            Job job2 = allJobs[maxIndex-(i-minIndex)];
+            allJobs[i] = job2;
+            allJobs[maxIndex-(i-minIndex)] = job1;
+        }
+
+        return allJobs;
+    }
+
     private ScheduleSwapInfo getNewOrder(Job[] jobs, Random generator, long start, long stopTime){
         Job[] reorder = new Job[jobs.length];
 
         int index1 = generator.nextInt(jobs.length-1);
         int index2 = generator.nextInt(jobs.length-1);
 
-        if(System.currentTimeMillis() - start > 2000){
+        if(System.currentTimeMillis() - start > 1000){
             Map<Integer, Job> overlappingJobs = getOverlappingJobs(jobs, jobs[index1]);
             Map<Integer, Job> jobCandidates = new HashMap<>();
-            jobCandidates.putAll(overlappingJobs);
-            DistributedRandomGenerator weightedRandom = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]));
-            index2 = weightedRandom.getDistributedRandomNumber(generator);
+            Map<Integer, Job> jobsEarlier= getJobsWithEarlierInterval(jobs, index1);
+            Map<Integer, Job> jobsLater = getJobsWithLaterInterval(jobs, index1);
+            Double rand = generator.nextDouble();
+            if(rand < 0.7){
+                jobCandidates = overlappingJobs;
+            } else if (rand > 0.7 && rand < 0.9) {
+                jobCandidates = jobsEarlier;
+            } else if (rand > 0.9){
+                jobCandidates = jobsLater;
+            }
+            DistributedRandomGenerator weightedRandomV2 = new DistributedRandomGenerator(getOverlapAmountFromOverlappingJobs(jobCandidates, jobs[index1]), generator);
+            index2 = weightedRandomV2.getDistributedRandomNumber();
         }
 
-        if (index1 == index2){
-            index2 = index1+1;
-        }
+
+
+//        if (index1 == index2){
+//            index2 = index1+1;
+//        }
+
+
 
         for (int i = 0; i < jobs.length;i++){
             Job j = jobs[i];
@@ -264,10 +328,20 @@ public class JobScheduler {
                 j = jobs[index2];
             else if (i == index2)
                 j = jobs[index1];
-
             reorder[i] = new Job(j.getJobID(), j.getDuration(), j.getReleaseDate(), j.getDueDate(), j.getEarlinessPenalty(), j.getRejectionPenalty(), j.getSetupTimes());
         }
+//        counter++;
+//        System.out.println(counter);
         return new ScheduleSwapInfo(reorder, index1, index2);
+    }
+
+    private Job[] cloneJobArray(Job[] jobs){
+        Job[] clonedJobs = new Job[jobs.length];
+        for (int i = 0; i < jobs.length;i++){
+            Job j = jobs[i];
+            clonedJobs[i] = new Job(j.getJobID(), j.getDuration(), j.getReleaseDate(), j.getDueDate(), j.getEarlinessPenalty(), j.getRejectionPenalty(), j.getSetupTimes());
+        }
+        return clonedJobs;
     }
 
     private double evaluate(Job[] jobs){
